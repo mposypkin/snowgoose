@@ -68,9 +68,9 @@ namespace snowgoose {
             }
             if (num > 0) {
                 setDim(num);
-                mCounter = malloc(sizeof (int));
+                mCounter = (int*) malloc(sizeof (int));
                 *((int*) mCounter) = 1;
-                mX = malloc(sizeof (T) * num);
+                mX = (T*) malloc(sizeof (T) * num);
             }
         }
 
