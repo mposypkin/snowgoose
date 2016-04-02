@@ -54,7 +54,7 @@ namespace snowgoose {
         template<class T> static T vecNormTwoSqr(int n, const T* x) {
             T v = 0.;
             for (int i = 0; i < n; i++)
-                v += BNBSQR(x[i]);
+                v += SGSQR(x[i]);
             return v;
         }
 
@@ -107,8 +107,8 @@ namespace snowgoose {
         template<class T> static T vecDistAbs(int n, const T* x, const T* y) {
             T v = 0.;
             for (int i = 0; i < n; i++) {
-                T u = BNBABS(y[i] - x[i]);
-                v = BNBMAX(u, v);
+                T u = SGABS(y[i] - x[i]);
+                v = SGMAX(u, v);
             }
             return v;
         }
@@ -239,12 +239,12 @@ namespace snowgoose {
          * @return the maximal absolute value
          */
         template<class T> static T maxAbs(int n, const T *x, int *pos = nullptr) {
-            T mv = BNBABS(x[0]);
+            T mv = SGABS(x[0]);
             int p = 0;
             for (int i = 0; i < n; i++) {
-                if (BNBABS(x[i]) > mv) {
+                if (SGABS(x[i]) > mv) {
                     p = i;
-                    mv = BNBABS(x[i]);
+                    mv = SGABS(x[i]);
                 }
             }
             if (pos != nullptr)
@@ -260,12 +260,12 @@ namespace snowgoose {
          * @return the minimal absolute value
          */
         template<class T> static T minAbs(int n, const T *x, int *pos = nullptr) {
-            T mv = BNBABS(x[0]);
+            T mv = SGABS(x[0]);
             int p = 0;
             for (int i = 0; i < n; i++) {
-                if (BNBABS(x[i]) < mv) {
+                if (SGABS(x[i]) < mv) {
                     *pos = i;
-                    mv = BNBABS(x[i]);
+                    mv = SGABS(x[i]);
                 }
             }
             if (pos != nullptr)
