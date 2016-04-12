@@ -2,6 +2,7 @@
 #define _INTERVAL_HPP_
 
 #include <math.h>
+#include "utilmacro.hpp"
 #include "sgerrcheck.hpp"
 
 
