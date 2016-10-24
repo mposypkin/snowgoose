@@ -190,6 +190,19 @@ namespace snowgoose {
         }
 
         /**
+         * Reads the vector from string
+         * @param s string
+         * @param n dimension 
+         * @param x vector to read
+         */
+        template<class T> static void vecRead(const std::string s, int n, T* x) {
+            std::istringstream is(s);
+            for (int i = 0; i < n; i++) {
+                is >> x[i];
+            }
+        }
+        
+        /**
          * Computes the maximal value an its position in a vector
          * @param n dimension
          * @param x vector 
