@@ -175,10 +175,15 @@ namespace snowgoose {
          * Prints the vector to string
          * @param n dimension 
          * @param x vector to print
+         * @param prec precision
          * @return resulting string
          */
-        template<class T> static std::string vecPrint(int n, const T* x) {
+        template<class T> static std::string vecPrint(int n, const T* x, int prec = 0) {
             std::ostringstream os;
+            if (prec) {
+                os.precision(prec);
+                os.setf(std::ios::fixed, std::ios::floatfield);
+            }
             os << "[";
             for (int i = 0; i < n; i++) {
                 os << x[i];
@@ -201,7 +206,7 @@ namespace snowgoose {
                 is >> x[i];
             }
         }
-        
+
         /**
          * Computes the maximal value an its position in a vector
          * @param n dimension
