@@ -33,6 +33,30 @@ namespace snowgoose {
         }
 
         /**
+         * Adds scalar value to elements of a vector
+         * @param x source vector
+         * @param y destination vector (can conincide with x)
+         * @param a scalar
+         */
+        template<class T> static void vecAddScalar(int n, T a, T* x, T* y) {
+            for (int i = 0; i < n; i++)
+                y[i] = x[i] + a;
+        }
+
+        /**
+         * Compute sum of vector elements
+         * @param n dimension
+         * @param x vector
+         * @return sum of element
+         */
+        template<class T> static T vecSum(int n, const T* x) {
+            T v = 0.;
+            for (int i = 0; i < n; i++)
+                v += x[i];
+            return v;
+        }
+
+        /**
          * Compute "first" vector norm 
          * @param n dimension
          * @param x vector
@@ -305,6 +329,7 @@ namespace snowgoose {
             vecSaxpy(n, sourcev, nplane, a, resultv);
         }
 
+                
     };
 }
 #endif
