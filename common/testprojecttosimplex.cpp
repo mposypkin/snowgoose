@@ -13,6 +13,8 @@
 
 #include <iostream>
 #include "projecttosimplex.hpp"
+#include "sgerrcheck.hpp"
+
 /*
  * 
  */
@@ -21,9 +23,17 @@ int main(int argc, char** argv) {
     const double C = 3.;
     const int N = 3;
     snowgoose::ProjectToSimplex<double> prj(C);
-    double x[N] = {0, 0, 0};
-    prj.project(N, x);
-    std::cout << "x = " << snowgoose::VecUtils::vecPrint(N, x) << "\n";
+    auto check = [&N, &prj](double* x, const double* check) {
+        prj.project(N, x);
+        double d = snowgoose::VecUtils::vecDist(N, x, check);
+        std::cout << "x = " << snowgoose::VecUtils::vecPrint(N, x) << ", distance from reference = " << d <<  "\n";
+        SG_ASSERT(d < 0.001);
+    };
+
+
+    double x[N] = {4,4,0};
+    double r[N] = {1.5, 1.5, 0};
+    check(x, r);
     return 0;
 }
 

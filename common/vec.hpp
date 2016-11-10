@@ -214,7 +214,7 @@ namespace snowgoose {
                 if (i != (n - 1))
                     os << ",";
             }
-            os << "]\n";
+            os << "]";
             return os.str();
         }
 
