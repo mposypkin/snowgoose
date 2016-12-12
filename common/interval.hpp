@@ -144,6 +144,68 @@ namespace snowgoose {
             *ymin = a;
             *ymax = b;
         }
+        
+        static void exp(flot xmin, flot xmax, flot* ymin, flot* ymax){
+            flot a = ::exp(xmin);
+            flot b = ::exp(xmax);
+            *ymin = SGMIN(a, b);
+            *ymax = SGMAX(a, b);
+        }
+        
+        static void sqrt(flot xmin, flot xmax, flot* ymin, flot* ymax){
+            if(xmin < 0 || xmax < 0)
+                SG_ERROR_REPORT("The function sqrt is not define for negative numbers.");
+            flot a = ::sqrt(xmin);
+            flot b = ::sqrt(xmax);
+            *ymin = SGMIN(a, b);
+            *ymax = SGMAX(a, b);
+        }
+        
+        static void mult(flot x, flot ymin, flot ymax, flot* zmin, flot* zmax) {
+            *zmin = SGMIN(x*ymin, x*ymax);
+            *zmax = SGMAX(x*ymin, x*ymax);
+        }
+        
+        static void sum(flot x, flot ymin, flot ymax, flot* zmin, flot* zmax) {
+            sum(x, x, ymin, ymax, zmin, zmax);
+        }
+        
+        static void cos_(flot xmin, flot xmax, flot* ymin, flot* ymax) {
+            flot a, b;
+            a = xmin + M_PI_2;
+            b = xmax + M_PI_2;
+            sin_(a, b, ymin, ymax);
+        }
+        
+        static void sin_(flot xmin, flot xmax, flot* ymin, flot* ymax) {
+            int k, l;
+            bool p2 = false;
+            bool p32 = false;
+
+            k = (int)ceil(xmin * M_2_PI);
+            l = (int)floor(xmax * M_2_PI);
+            
+             
+            
+            for (int i = k; i <= l; i++) {
+                int test = i % 4;
+                if ((i % 4) == 1 || (i % 4) == -3)
+                    p2 = true;
+                else if ((i % 4) == 3 || (i % 4) == -1)
+                    p32 = true;
+                if (p2 && p32)
+                    break;
+            }
+            if (p2)
+                *ymax = 1.;
+            else
+                *ymax = SGMAX(::sin(xmin), ::sin(xmax));
+            if (p32)
+                *ymin = -1.;
+            else
+                *ymin = SGMIN(::sin(xmin), ::sin(xmax));
+        }
+        
     };
 
 }
