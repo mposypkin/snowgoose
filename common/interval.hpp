@@ -206,7 +206,7 @@ namespace snowgoose {
                 *ymin = SGMIN(::sin(xmin), ::sin(xmax));
         }
         
-    };
+    };   
 
 }
 #endif
