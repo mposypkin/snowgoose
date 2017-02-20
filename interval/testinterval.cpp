@@ -14,14 +14,38 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <cstdlib>
-#include "interval.hpp"
+#include "interval_air.hpp"
 
 using namespace std;
 using namespace snowgoose::interval;
 
+template <class T> 
+class A
+{
+    private:
+        T f;
+    public:
+  A(T t) : f(t), f2(t){}
+  protected:
+      void Test2() {}
+      T f2;
+};
+
+template <class T> 
+class B : public A<T>
+{
+    public:
+    B(T t) : A<T>(t) {}
+    void test() 
+    { 
+        this->f2 = 9.0; 
+        this->Test2(); 
+    }
+};
+
 int main(int argc, char** argv) {
 
-    Interval<double> a(2.0, 3.0), b(-1, 1);
+    Interval<double> a(2.0, 3.0), b(1, 7);
     auto c = sqr(a);
     std::cout << c;
     auto cc = a ^ 3;
@@ -43,7 +67,7 @@ int main(int argc, char** argv) {
     Interval<double> x(0.9, 1.1), y(-0.1, 0.1);
     Interval<double> z = -20.0 * exp(-0.2 * sqrt(0.5 * (sqr(x) + sqr(y)))) - exp(0.5*(cos(2.0 * M_PI * x) + cos(2.0 * M_PI * y))) + 20 + M_E;
     std::cout << z;
-    Interval<double> z2 = sin(1/x);
+    Interval<double> z2 = sin(1.0/x);
     std::cout << z2;
     
     std::cout << abs(Interval<double>(-3.0, 1.0));
