@@ -8,7 +8,6 @@
 #include "expr.hpp"
 #include "common/utilmacro.hpp"
 
-
 namespace expression {
 
 	template <class T>

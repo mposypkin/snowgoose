@@ -14,11 +14,9 @@
 #include "expr.hpp"
 #include "testfuncs.hpp"
 #include "interval/interval_air.hpp"
-
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-//using namespace std;
 using namespace expression;
 using namespace snowgoose::interval;
 
