@@ -21,7 +21,8 @@
 #include <exception>
 #include <memory>
 #include <algorithm> 
-#include "../common/utilmacro.hpp"
+#include <limits>
+#include "common/utilmacro.hpp"
 #include "enums.h"
 
 namespace snowgoose {
@@ -30,9 +31,9 @@ namespace snowgoose {
 	template<class T> class Interval;
 	template<class T> using IL = std::initializer_list<Interval<T>>;
 
-		/**
-		* This class implements interval arithmetic
-		*/
+    /**
+    * This class implements interval arithmetic
+    */
     template<class T> class Interval
     {
     public:
@@ -41,7 +42,7 @@ namespace snowgoose {
 			* @param lb low bound
 			* @param rb upper bound
 			*/
-			Interval(const T &lb, const T &rb);
+			Interval(const T lb, const T rb);
 			/**
 			* Constructor
 			* @param pair with low and upper bounds
@@ -343,7 +344,7 @@ namespace snowgoose {
 		template<class T> T Interval<T>::lb() const { return m_lb; }
 		template<class T> T Interval<T>::rb() const { return m_rb; }
 
-		template<class T> Interval<T>::Interval(const T &lb, const T &rb)
+		template<class T> Interval<T>::Interval(const T lb, const T rb)
 		{
 			this->m_lb = lb < rb ? lb : rb;
 			this->m_rb = rb > lb ? rb : lb;
@@ -492,8 +493,10 @@ namespace snowgoose {
 		}
 		template<class T> Interval<T> ln(const Interval<T> &x)
 		{
-			if (x.m_lb < 0.0 || x.m_rb < 0.0)
+			if (x.m_rb < 0.0)
 				throw std::invalid_argument("The function ln is not define for negative numbers");
+			if (x.m_lb < 0.0)
+				return Interval<T>(-std::numeric_limits<T>::infinity(), ::log(x.m_rb));
 			T a = ::log(x.m_lb);
 			T b = ::log(x.m_rb);
 			T lb = SGMIN(a, b);
@@ -502,11 +505,12 @@ namespace snowgoose {
 		}
 		template<class T> Interval<T> log(const Interval<T> &x, double base)
 		{
-			if (x.m_lb <= 0.0 || x.m_rb <= 0.0)
+			if (x.m_rb <= 0.0)
 				throw std::invalid_argument("The function log is not define for negative numbers and 0.0");
 			if (base <= 0.0 || base == 1.0)
 				throw std::invalid_argument("The function log is not define for negative base and if base equals 1.0");
-
+			if (x.m_lb < 0.0)
+				return Interval<T>(-std::numeric_limits<T>::infinity(), ::log(x.m_rb) / ::log(base));
 			T a = ::log(x.m_lb) / ::log(base);
 			T b = ::log(x.m_rb) / ::log(base);
 			T lb = SGMIN(a, b);
@@ -640,8 +644,10 @@ namespace snowgoose {
 		}
 		template<class T> Interval<T> sqrt(const Interval<T> &x)
 		{
-			if (x.m_lb < 0.0 || x.m_rb < 0.0)
+			if (x.m_rb < 0.0)
 				throw std::invalid_argument("The function sqrt is not define for negative numbers");
+			if (x.m_lb < 0.0)
+				return Interval<T>(0.0, ::sqrt(x.m_rb));
 			T a = ::sqrt(x.m_lb);
 			T b = ::sqrt(x.m_rb);
 			T lb = SGMIN(a, b);

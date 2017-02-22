@@ -2,6 +2,7 @@
 *.a
 *.o
 *.exe
+interval/Ext
 
 #temporary files
 deps.inc
