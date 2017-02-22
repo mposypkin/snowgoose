@@ -8,6 +8,7 @@
 #include "expr.hpp"
 #include "common/utilmacro.hpp"
 
+namespace snowgoose {
 namespace expression {
 
 	template <class T>
@@ -1349,5 +1350,6 @@ namespace expression {
 		return result;
 	}
 
+}
 }
 #endif

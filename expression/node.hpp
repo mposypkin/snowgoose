@@ -11,7 +11,7 @@
 #include "expr.hpp"
 
 
-
+namespace snowgoose {
 namespace expression {
 
 	template<class T> class Node;
@@ -438,7 +438,7 @@ namespace expression {
 		std::ostream& prn(std::ostream & out) const { return out << "loopMul(" << *this->m_childs[0] << ",i)"; }
 	};
 
-}
+}}
 
 #endif /* NODE__HPP */
 
