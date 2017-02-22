@@ -53,7 +53,11 @@ namespace snowgoose {
 			* @param t with equal low and upper bounds
 			*/
 			Interval(const T t);
-            Interval() { m_lb = 0.0; m_rb=0.0; }
+			/**
+			* Default constructor. Sets low and upper bound to 0.0.
+			* 
+			*/
+            		Interval();
 			/**
 			* Adds two intervals
 			*/
@@ -351,6 +355,7 @@ namespace snowgoose {
 		}
 		template<class T> Interval<T>::Interval(const std::pair<T, T> &pair) : Interval(pair.first, pair.second) {}
 		template<class T> Interval<T>::Interval(const T t) : Interval(t, t) {}
+		template<class T> Interval<T>::Interval() { m_lb = 0.0; m_rb=0.0; }
 		template<class T> Interval<T>::operator T(){ return this->m_lb; }
 		template<class T> Interval<T> Interval<T>::operator+(const Interval &y) const
 		{

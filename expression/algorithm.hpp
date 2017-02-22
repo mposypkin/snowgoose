@@ -10,6 +10,7 @@
 
 using namespace snowgoose::interval;
 
+namespace snowgoose {
 namespace expression {
 	/**
 	* Base class for algorithms
@@ -181,6 +182,7 @@ namespace expression {
 			throw std::invalid_argument("Invalid condition.");
 		}
 	};
+}
 }
 
 #endif /* ALGORITHM__HPP */

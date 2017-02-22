@@ -17,7 +17,7 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-using namespace expression;
+using namespace snowgoose::expression;
 using namespace snowgoose::interval;
 
 void calcFunc(const std::string& name, Expr<double> expr, const std::vector<double>& vars)

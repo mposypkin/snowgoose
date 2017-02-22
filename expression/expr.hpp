@@ -8,7 +8,7 @@
 #include "node.hpp"
 #include "algorithm.hpp"
 
-
+namespace snowgoose {
 namespace expression {
 
 	/**
@@ -551,6 +551,7 @@ namespace expression {
 	{
 		return out << *v.node;
 	}
+}
 }
 
 #endif /* EXPR__HPP */
