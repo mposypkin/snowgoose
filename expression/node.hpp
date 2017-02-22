@@ -6,9 +6,9 @@
 #include <string>
 #include <vector>
 #include "algorithm.hpp"
-#include "../interval/interval_air.hpp"
-#include "../interval/enums.h"
-#include "../expression/expr.hpp"
+#include "interval/interval_air.hpp"
+#include "interval/enums.h"
+#include "expr.hpp"
 
 
 

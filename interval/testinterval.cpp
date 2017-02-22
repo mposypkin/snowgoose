@@ -35,7 +35,7 @@ int main(int argc, char** argv) {
     std::cout << ddd;
     auto dddd = 1.0 / b;
     std::cout << dddd;
-	  std::cout << ln(dddd);
+	std::cout << ln(dddd);
     std::cout << a + b;
     std::cout << a - b;
     std::cout << a * b;
@@ -49,11 +49,11 @@ int main(int argc, char** argv) {
     std::cout << abs(Interval<double>(-3.0, 1.0));
     std::cout << ln(Interval<double>(M_E, M_E * M_E));
     std::cout << log(Interval<double>(100.0, 1000.0), 10.0);
-	  IL<double> li = { { -1.0,1.0 }, { -7.0, 5.0 }, {-99.0, 0.0} };
-	  std::cout << min(li);
+    IL<double> li = { { -1.0,1.0 }, { -7.0, 5.0 }, {-99.0, 0.0} };
+    std::cout << min(li);
 
-	  std::cout << "sin " << sin(ln(Interval<double>(-3.0, 10.0)));
-	  std::cout << "sqrt " << sqrt(Interval<double>(-3.0, 100.0));
+    std::cout << "sin " << sin(ln(Interval<double>(-3.0, 10.0)));
+    std::cout << "sqrt " << sqrt(Interval<double>(-3.0, 100.0));
     return 0;
 }
 

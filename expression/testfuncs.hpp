@@ -6,7 +6,7 @@
 #include <iostream>
 #include <vector>
 #include "expr.hpp"
-#include "../common/utilmacro.hpp"
+#include "common/utilmacro.hpp"
 
 
 namespace expression {
