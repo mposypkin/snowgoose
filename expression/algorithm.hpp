@@ -5,8 +5,8 @@
 #include <memory>
 #define _USE_MATH_DEFINES
 #include <math.h>
-#include "../interval/interval_air.hpp"
-#include "../interval/enums.h"
+#include "interval/interval_air.hpp"
+#include "interval/enums.h"
 
 using namespace snowgoose::interval;
 

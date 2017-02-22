@@ -5,10 +5,8 @@
 #include <math.h>
 #include <iostream>
 #include <vector>
-#include <common/utilmacro.hpp>
 #include "expr.hpp"
-
-
+#include "common/utilmacro.hpp"
 
 namespace expression {
 

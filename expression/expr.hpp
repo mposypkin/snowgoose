@@ -4,9 +4,10 @@
 #include <iostream> 
 #include <memory>
 #include <functional>
+#include <math.h>
 #include "node.hpp"
 #include "algorithm.hpp"
-#include <math.h>
+
 
 namespace expression {
 
