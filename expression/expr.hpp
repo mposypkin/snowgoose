@@ -46,7 +46,7 @@ namespace expression {
 		* @param rv is right expression
 		* @return expression
 		*/
-		Expr& operator+=(const Expr& value);
+		Expr operator+=(const Expr& value);
 		/**
 		* Subtracts the expression from given one
 		* @param value is left expression
@@ -64,7 +64,7 @@ namespace expression {
 		* Allows to write minus before expression
 		* @return expression
 		*/
-		Expr& operator-();
+		Expr operator-();
 		/**
 		* Multiplies expressions
 		* @param value is right expression
@@ -306,7 +306,7 @@ namespace expression {
 		* @param alg is algorithm. It allows to calculate either value of function or interval estimation of function.
 		* @return real number or interval
 		*/
-		T calc(const std::vector<T> &v, const Algorithm<T> & alg);
+		T calc(const std::vector<T> &v, const Algorithm<T> & alg) const;
 		/**
 		* Output the expression
 		* @param out is output stream
@@ -343,10 +343,9 @@ namespace expression {
 		ptrNode<T> pNode(new Const<T>(lv));
 		return Expr<T>(ptrNode<T>(new Plus<T>(pNode, rv.node)));
 	}
-	template <class T> Expr<T>& Expr<T>::operator+=(const Expr<T>& value)
+	template <class T> Expr<T> Expr<T>::operator+=(const Expr<T>& value)
 	{
-		node = (*this + value).node;
-		return *this;
+		return *this + value;
 	}
 	template <class T> Expr<T> Expr<T>::operator-(const Expr<T>& value)
 	{
@@ -357,10 +356,9 @@ namespace expression {
 		ptrNode<T> pNode(new Const<T>(lv));
 		return Expr<T>(ptrNode<T>(new Minus<T>(pNode, rv.node)));
 	}
-	template <class T> Expr<T>& Expr<T>::operator-()
+	template <class T> Expr<T> Expr<T>::operator-()
 	{
-		node = (-1.0 * (*this)).node;
-		return *this;
+		return -1*(*this);
 	}
 	template <class T> Expr<T> Expr<T>::operator*(const Expr<T>& value)
 	{
@@ -542,7 +540,7 @@ namespace expression {
 		return Expr<T>(ptrNode<T>(new CycleMul<T>(value.node, i)));
 	}
 
-	template <class T> T Expr<T>::calc(const std::vector<T> &v, const Algorithm<T> & alg)
+	template <class T> T Expr<T>::calc(const std::vector<T> &v, const Algorithm<T> & alg) const
 	{
 		return node->calc(v, alg);
 	}

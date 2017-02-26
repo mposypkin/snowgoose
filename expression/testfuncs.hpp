@@ -37,8 +37,9 @@ namespace expression {
 	}
 
 	template <class T>
-	Expr<T> Ackley4(int n)
+	Expr<T> Ackley4()
 	{
+		int n = 2;
 		Expr<T> x;
 		Iterator i(0, n - 2);
 		Expr<T> t = (Expr<T>)i + 1;
@@ -136,8 +137,18 @@ namespace expression {
 		Expr<T> x;
 		Iterator i(1, 11);
 		Expr<T> t = 0.1 * (Expr<T>)i;
-		Expr<T> y = exp(-t) - 5 * exp(-10 * t);
+		Expr<T> y = exp(-t) - 5 * exp(-10 * t) + 3 * exp(-4 * t);
 		return loopSum(sqr(x[2] * exp(-t * x[0]) - x[3] * exp(-t * x[1]) + 3 * exp(-t * x[4]) - y), i);
+	}
+
+	template <class T>
+	Expr<T> BiggsExpr6()
+	{
+		Expr<T> x;
+		Iterator i(1, 13);
+		Expr<T> t = 0.1 * (Expr<T>)i;
+		Expr<T> y = exp(-t) - 5 * exp(-10 * t) + 3 * exp(-4 * t);
+		return loopSum(sqr(x[2] * exp(-t * x[0]) - x[3] * exp(-t * x[1]) + x[5] * exp(-t * x[4]) - y), i);
 	}
 
 	template <class T>
