@@ -57,7 +57,7 @@ namespace snowgoose {
 			* Default constructor. Sets low and upper bound to 0.0.
 			* 
 			*/
-            		Interval();
+            Interval();
 			/**
 			* Adds two intervals
 			*/

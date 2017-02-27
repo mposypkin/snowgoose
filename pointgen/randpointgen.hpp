@@ -44,7 +44,17 @@ namespace snowgoose {
                 std::uniform_real_distribution<> urd(mBox.mA[i], mBox.mB[i]);
                 x[i] = urd(mGen);
             }
+            return true;
         }
+        bool getPoint(std::vector<FT> &x) {
+            const int n = mBox.mDim;
+            for (int i = 0; i < n; i++) {
+                std::uniform_real_distribution<> urd(mBox.mA[i], mBox.mB[i]);
+                x[i] = urd(mGen);
+            }
+            return true;
+        }
+
 
         void reset() {
             if (mSeed != 0) {

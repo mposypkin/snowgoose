@@ -390,7 +390,7 @@ namespace expression {
 		ExprIndex(const Expr<T>& e) : expr(e) {}
 		T calc(const std::vector<T> &v, const Algorithm<T> & alg)
 		{
-			size_t index = (size_t)expr.calc(v, alg);
+			size_t index = (size_t)((double)expr.calc(v, alg));
 			return v[index];
 		}
 		std::ostream& prn(std::ostream & out) const { return out << "x[" << expr << "]"; };

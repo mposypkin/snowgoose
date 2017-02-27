@@ -88,7 +88,7 @@ int main(int argc, char** argv) {
 	IL<double> list = { { 1.0, 4.0 },{ 2.0, 3.0 } };
 	auto minInterval = min(list);
 
-	auto last = Ackley4<double>(2);
+	auto last = Ackley4<double>();
 	calcFunc("Last", last, { 1.479252, -0.739807});
 	std::cout << last << '\n';
 
