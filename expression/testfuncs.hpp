@@ -43,7 +43,7 @@ namespace expression {
 		Expr<T> x;
 		Iterator i(0, n - 2);
 		Expr<T> t = (Expr<T>)i + 1;
-		return loopSum(exp(pow(sqr(x[i]) + sqr(x[t]) ,-5.0)) + 3*(cos(2*x[i]) + sin(2*x[t])), i);
+		return loopSum(exp(1.0/pow(sqr(x[i]) + sqr(x[t]) ,5.0)) + 3*(cos(2*x[i]) + sin(2*x[t])), i);
 	}
 
 	template <class T>
@@ -62,8 +62,9 @@ namespace expression {
 	}
 
 	template <class T>
-	Expr<T> Alpine2(int N)
+	Expr<T> Alpine2()
 	{
+        int N = 3;
 		Expr<T> x;
 		Iterator i(0, N - 1);
 		return loopMul(sqrt(x[i]) * sin(x[i]), i);

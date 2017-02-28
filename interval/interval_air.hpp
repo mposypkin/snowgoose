@@ -17,7 +17,7 @@
 #include <iostream> 
 #include <limits>
 #define _USE_MATH_DEFINES
-#include <math.h>
+#include <cmath>
 #include <exception>
 #include <memory>
 #include <algorithm> 
@@ -386,10 +386,10 @@ namespace snowgoose {
 			{
 				if (lb == 0.0)
 					throw std::invalid_argument("The function pow is not define for base=0.0 and exponent<0");
-				return Interval(::pow(rb, exp), ::pow(lb, exp));
+				return Interval(std::pow(rb, exp), std::pow(lb, exp));
 			}
 			else //increases monotonically
-				return Interval(::pow(lb, exp), ::pow(rb, exp));
+				return Interval(std::pow(lb, exp), std::pow(rb, exp));
 		}
 		template<class T> Interval<T> Interval<T>::operator^(const Interval &y) const
 		{
@@ -501,9 +501,9 @@ namespace snowgoose {
 			if (x.m_rb < 0.0)
 				throw std::invalid_argument("The function ln is not define for negative numbers");
 			if (x.m_lb < 0.0)
-				return Interval<T>(-std::numeric_limits<T>::infinity(), ::log(x.m_rb));
-			T a = ::log(x.m_lb);
-			T b = ::log(x.m_rb);
+				return Interval<T>(-std::numeric_limits<T>::infinity(), std::log(x.m_rb));
+			T a = std::log(x.m_lb);
+			T b = std::log(x.m_rb);
 			T lb = SGMIN(a, b);
 			T rb = SGMAX(a, b);
 			return Interval<T>(lb, rb);
@@ -515,9 +515,9 @@ namespace snowgoose {
 			if (base <= 0.0 || base == 1.0)
 				throw std::invalid_argument("The function log is not define for negative base and if base equals 1.0");
 			if (x.m_lb < 0.0)
-				return Interval<T>(-std::numeric_limits<T>::infinity(), ::log(x.m_rb) / ::log(base));
-			T a = ::log(x.m_lb) / ::log(base);
-			T b = ::log(x.m_rb) / ::log(base);
+				return Interval<T>(-std::numeric_limits<T>::infinity(), std::log(x.m_rb) / std::log(base));
+			T a = std::log(x.m_lb) / std::log(base);
+			T b = std::log(x.m_rb) / std::log(base);
 			T lb = SGMIN(a, b);
 			T rb = SGMAX(a, b);
 			return Interval<T>(lb, rb);
@@ -557,11 +557,11 @@ namespace snowgoose {
 			if (p2)
 				rb = 1.;
 			else
-				rb = SGMAX(::sin(x.m_lb), ::sin(x.m_rb));
+				rb = SGMAX(std::sin(x.m_lb), std::sin(x.m_rb));
 			if (p32)
 				lb = -1.;
 			else
-				lb = SGMIN(::sin(x.m_lb), ::sin(x.m_rb));
+				lb = SGMIN(std::sin(x.m_lb), std::sin(x.m_rb));
 
 			return Interval<T>(lb, rb);
 		}
@@ -571,7 +571,7 @@ namespace snowgoose {
 				throw std::invalid_argument("Invalid argument in asin function.The argument is out of this interval[-1, 1].");
 			T lb = x.m_lb < -1.0 ? -1.0 : x.m_lb;
 			T rb = x.m_rb > 1.0 ? 1.0 : x.m_rb;
-			return Interval<T>(::asin(lb), ::asin(rb));
+			return Interval<T>(std::asin(lb), std::asin(rb));
 		}
 		template<class T> Interval<T> cos(const Interval<T> &x)
 		{
@@ -587,7 +587,7 @@ namespace snowgoose {
 				throw std::invalid_argument("Invalid argument in acos function.The argument is out of this interval[-1, 1].");
 			T lb = x.m_lb < -1.0 ? -1.0 : x.m_lb;
 			T rb = x.m_rb > 1.0 ? 1.0 : x.m_rb;
-			return Interval<T>(::acos(rb), ::acos(lb));
+			return Interval<T>(std::acos(rb), std::acos(lb));
 		}
 		template<class T> Interval<T> tg(const Interval<T> &x)
 		{
@@ -605,7 +605,7 @@ namespace snowgoose {
 			}
 			if (p2)
 				throw std::invalid_argument("Invalid argument in tg function. Tg is not defined for PI*N/2.");
-			return Interval<T>(::tan(x.m_lb), ::tan(x.m_rb));
+			return Interval<T>(std::tan(x.m_lb), std::tan(x.m_rb));
 		}
 		template<class T> Interval<T> ctg(const Interval<T> &x)
 		{
@@ -625,24 +625,24 @@ namespace snowgoose {
 			if (pi)
 				throw std::invalid_argument("Invalid argument in ctg function. Ctg is not defined for PI*N.");
 
-			T lb = 1.0 / ::tan(x.m_rb);
-			T rb = 1.0 / ::tan(x.m_lb);
+			T lb = 1.0 / std::tan(x.m_rb);
+			T rb = 1.0 / std::tan(x.m_lb);
 			return Interval<T>(lb, rb);
 		}
 		template<class T> Interval<T> atg(const Interval<T> &x)
 		{
-			return Interval<T>(::atan(x.m_lb), ::atan(x.m_rb));
+			return Interval<T>(::atan(x.m_lb), std::atan(x.m_rb));
 		}
 		template<class T> Interval<T> actg(const Interval<T> &x)
 		{
-			T lb = M_PI_2 - ::atan(x.m_rb);
-			T rb = M_PI_2 - ::atan(x.m_lb);
+			T lb = M_PI_2 - std::atan(x.m_rb);
+			T rb = M_PI_2 - std::atan(x.m_lb);
 			return Interval<T>(lb, rb);
 		}
 		template<class T> Interval<T> exp(const Interval<T> &x)
 		{
-			T t1 = ::exp(x.m_lb);
-			T t2 = ::exp(x.m_rb);
+			T t1 = std::exp(x.m_lb);
+			T t2 = std::exp(x.m_rb);
 			T lb = SGMIN(t1, t2);
 			T rb = SGMAX(t1, t2);
 			return Interval<T>(lb, rb);
@@ -652,17 +652,17 @@ namespace snowgoose {
 			if (x.m_rb < 0.0)
 				throw std::invalid_argument("The function sqrt is not define for negative numbers");
 			if (x.m_lb < 0.0)
-				return Interval<T>(0.0, ::sqrt(x.m_rb));
-			T a = ::sqrt(x.m_lb);
-			T b = ::sqrt(x.m_rb);
+				return Interval<T>(0.0, std::sqrt(x.m_rb));
+			T a = std::sqrt(x.m_lb);
+			T b = std::sqrt(x.m_rb);
 			T lb = SGMIN(a, b);
 			T rb = SGMAX(a, b);
 			return Interval<T>(lb, rb);
 		}
 		template<class T> Interval<T> abs(const Interval<T> &x)
 		{
-			T t1 = ::abs(x.m_lb);
-			T t2 = ::abs(x.m_rb);
+			T t1 = std::abs(x.m_lb);
+			T t2 = std::abs(x.m_rb);
 			T lb = (SGMIN(x.m_lb, x.m_rb) <= 0.0 && SGMAX(x.m_lb, x.m_rb) >= 0) ? 0.0 : SGMIN(t1, t2);
 			T rb = SGMAX(t1, t2);
 			return Interval<T>(lb, rb);
