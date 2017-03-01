@@ -3,10 +3,10 @@
 
 #include <iostream> 
 #include <memory>
-#define _USE_MATH_DEFINES
-#include <math.h>
+#include <cmath>
 #include "interval/interval_air.hpp"
 #include "interval/enums.h"
+#include <cmath>
 
 using namespace snowgoose::interval;
 
@@ -60,52 +60,55 @@ namespace expression {
 				throw std::invalid_argument("Invalid operation. Divide by 0.0.");
 			return left / right; 
 		}
-		T Sin(const T& t) const { return ::sin(t); };
-		T Cos(const T& t) const { return ::cos(t); };
-		T Tan(const T& t) const { return ::tan(t); };
-		T Ctg(const T& t) const { return 1.0 / ::tan(t);  };
+		T Sin(const T& t) const { return std::sin(t); };
+		T Cos(const T& t) const { return std::cos(t); };
+		T Tan(const T& t) const { return std::tan(t); };
+		T Ctg(const T& t) const { return 1.0 / std::tan(t);  };
 
 		T ArcCos(const T& t) const 
 		{
 			if(t < -1.0 || t > 1.0)
 				throw std::invalid_argument("Invalid argument in arccos function. The argument is out of this interval [-1,1].");
-			return ::acos(t); 
+			return std::acos(t); 
 		};
 		T ArcSin(const T& t) const
 		{
 			if (t < -1.0 || t > 1.0)
 				throw std::invalid_argument("Invalid argument in arcsin function. The argument is out of this interval [-1,1].");
-			return ::asin(t);
+			return std::asin(t);
 		};
-		T ArcTan(const T& t) const { return ::atan(t); }
-		T ArcCtg(const T& t) const { return M_PI_2 - ::atan(t); }
-		T Exp(const T& t) const { return ::exp(t); };
+		T ArcTan(const T& t) const { return std::atan(t); }
+		T ArcCtg(const T& t) const { return M_PI_2 - std::atan(t); }
+		T Exp(const T& t) const { return std::exp(t); };
 		T Sqrt(const T& t) const 
 		{
 			if(t < 0.0)
 				throw std::invalid_argument("The function sqrt is not defined for negative numbers");
-			return ::sqrt(t); 
+			return std::sqrt(t); 
 		};
 		T Sqr(const T& t) const { return t*t; };
-		T Pow(const T& base, int exp) const { return ::pow(base, exp); };
+		T Pow(const T& base, int exp) const { return std::pow(base, exp); };
 		T Pow(const T& base, const T& exp) const
 		{
 			if(base < 0.0)
 				throw std::invalid_argument("The function pow is not define for negative base");
-			return ::pow(base, exp);
+			return std::pow(base, exp);
 		};
-		T Abs(const T& t) const { return ::abs(t); };
+		T Abs(const T& t) const 
+        { 
+            return std::abs(t); 
+        };
 		T Ln(const T& t) const
 		{
 			if (t < 0)
 				throw std::invalid_argument("The function Ln is not define for negative numbers");
-			return ::log(t);
+			return std::log(t);
 		};
 		T Log(const T& t, double base) const
 		{
 			if (t < 0)
 				throw std::invalid_argument("The function Log is not define for negative numbers");
-			return ::log(t) / ::log(base);
+			return std::log(t) / std::log(base);
 		};
 		T Min(const T& left, const T& right) const { return left < right ? left : right; }
 		T Max(const T& left, const T& right) const { return left > right ? left : right; }
