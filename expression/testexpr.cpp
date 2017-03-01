@@ -49,11 +49,11 @@ int main(int argc, char** argv) {
 
 	calcFunc("Factorial 5", Factorial<double>(5), { });
 	
-	auto alpine = Alpine2<double>(1);
-	calcFunc("Alpine", alpine, { 7.917 });
+	auto alpine = Alpine2<double>();
+	calcFunc("Alpine", alpine, { 7.917, 7.9170526982459462172, 4.81584 });
 
-	auto alpineInterval = Alpine2<Interval<double>>(1);
-	calcInterval("Alpine estimation", alpineInterval, { { 7.5, 8.5 } });
+	auto alpineInterval = Alpine2<Interval<double>>();
+	calcInterval("Alpine estimation", alpineInterval, { { 7.5, 8.5 }, { 7.5, 8.5 }, { 7.5, 8.5 } });
 
 	auto bigg = BiggsExpr2<double>();
 	calcFunc("Biggs", bigg, { 1, 10});
