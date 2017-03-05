@@ -29,37 +29,38 @@ namespace snowgoose {
         /**
          * Constructor
          * @param box input box
+         * @param maxnum maximal number of points to generate (negative means infinite number of points)
          * @param seed seed (0 - not use seed)
          */
-        RandomPointGenerator(const snowgoose::Box<FT>& box, int seed = 0) :
-        mBox(box),
-        mSeed(seed) {
+        RandomPointGenerator(const snowgoose::Box<FT>& box, int maxnum = -1, int seed = 0) :
+        mBox(box), mSeed(seed), mMaxNumber(maxnum) {
             mGen.seed(time(0));
             reset();
         }
 
         bool getPoint(FT* x) {
-            const int n = mBox.mDim;
-            for (int i = 0; i < n; i++) {
-                std::uniform_real_distribution<> urd(mBox.mA[i], mBox.mB[i]);
-                x[i] = urd(mGen);
+            mCurNumber ++;
+            if ((mMaxNumber >= 0) && (mCurNumber > mMaxNumber)) {
+                return false;
+            } else {
+                const int n = mBox.mDim;
+                for (int i = 0; i < n; i++) {
+                    std::uniform_real_distribution<> urd(mBox.mA[i], mBox.mB[i]);
+                    x[i] = urd(mGen);
+                }
+                return true;
             }
-            return true;
-        }
-        bool getPoint(std::vector<FT> &x) {
-            const int n = mBox.mDim;
-            for (int i = 0; i < n; i++) {
-                std::uniform_real_distribution<> urd(mBox.mA[i], mBox.mB[i]);
-                x[i] = urd(mGen);
-            }
-            return true;
         }
 
+        bool getPoint(std::vector<FT> &x) {
+            return getPoint(x.data());
+        }
 
         void reset() {
             if (mSeed != 0) {
                 mGen.seed(mSeed);
             }
+            mCurNumber = 0;
         }
 
 
@@ -67,6 +68,8 @@ namespace snowgoose {
         const snowgoose::Box<FT>& mBox;
         const int mSeed;
         std::mt19937 mGen;
+        const int mMaxNumber;
+        int mCurNumber;
     };
 }
 

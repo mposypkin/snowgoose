@@ -27,7 +27,7 @@ namespace snowgoose {
         /**
          * Get next point
          * @param x new point to fill in
-         * @return true if the point was sucessfully generated, false - otherwise (no more points)
+         * @return true if the point was successfully generated, false - otherwise (no more points)
          */
         virtual bool getPoint(FT* x) = 0;
 
