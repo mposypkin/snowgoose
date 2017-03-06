@@ -52,10 +52,7 @@ namespace snowgoose {
             }
         }
 
-        bool getPoint(std::vector<FT> &x) {
-            return getPoint(x.data());
-        }
-
+       
         void reset() {
             if (mSeed != 0) {
                 mGen.seed(mSeed);
