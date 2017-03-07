@@ -39,7 +39,7 @@ namespace snowgoose {
         }
 
         bool getPoint(FT* x) {
-            mCurNumber ++;
+            mCurNumber++;
             if ((mMaxNumber >= 0) && (mCurNumber > mMaxNumber)) {
                 return false;
             } else {
@@ -52,13 +52,17 @@ namespace snowgoose {
             }
         }
 
-       
         void reset() {
             if (mSeed != 0) {
                 mGen.seed(mSeed);
             }
             mCurNumber = 0;
         }
+
+        virtual std::string about() const {
+            return "Random uniformly distribute point generator";
+        }
+
 
 
     private:

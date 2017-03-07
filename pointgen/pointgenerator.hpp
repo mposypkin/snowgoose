@@ -37,6 +37,14 @@ namespace snowgoose {
         virtual void reset() {
             SG_ERROR_REPORT("Resetting the generator is not implemented\n");
         }
+        
+        /**
+         * Description of the point generator
+         * @return point generator description
+         */
+        virtual std::string about() const {
+            return "Pointe generator with empty description";
+        }
     };
 
 }
