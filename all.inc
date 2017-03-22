@@ -38,8 +38,7 @@ STD_OPT = -std=c++14
 
 # Auxilary headers
 SNOWGOOSE=$(ROOT)../snowgoose
-OPTITEST=$(ROOT)../OPTITEST
-EXTRA_INC = -I$(SNOWGOOSE) -I$(OPTITEST)
+EXTRA_INC = -I$(SNOWGOOSE)
 
 
 #common options
