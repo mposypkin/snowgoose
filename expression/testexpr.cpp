@@ -12,13 +12,150 @@
  */
 #include <iostream>
 #include "expr.hpp"
-#include <testfuncs/testfuncs.hpp>
 #include "interval/interval_air.hpp"
 #include <math.h>
 
 using namespace snowgoose::expression;
 using namespace snowgoose::interval;
-using namespace OPTITEST;
+
+template <class T>
+Expr<T> Ackley1(int N)
+{
+	Expr<T> x;
+	Iterator i(0, N - 1);
+	Expr<T> y = -20 * exp(-0.2 * sqrt((1.0 / N) * loopSum(sqr(x[i]), i))) - exp((1.0 / N) * loopSum(cos(2 * M_PI * x[i]), i)) + 20.0 + M_E;
+	return y;
+}
+
+
+template <class T>
+Expr<T> Brad()
+{
+	std::vector<double> vConst = { 0.14, 0.18, 0.22, 0.25, 0.29, 0.32, 0.35, 0.39, 0.37, 0.58, 0.73, 0.96, 1.34, 2.10, 4.39 };
+	Expr<T> result = 0.0;
+	Expr<T> y;
+	for (int i = 0; i < 15; i++)
+	{
+		int I = i + 1;
+		int J = 16 - I;
+		Expr<T> a = vConst[i] - y[0] - I;
+		Expr<T> b = J * y[1] + SGMIN(I, J) * y[2];
+		result = result + sqr(a / b);
+	}
+	return result;
+}
+
+
+template <class T>
+Expr<T> Alpine2()
+{
+int N = 3;
+	Expr<T> x;
+	Iterator i(0, N - 1);
+	return loopMul(sqrt(x[i]) * sin(x[i]), i);
+}
+
+template <class T>
+Expr<T> BiggsExpr2()
+{
+	Expr<T> x;
+	Iterator i(1, 10);
+	Expr<T> t = 0.1 * (Expr<T>)i;
+	Expr<T> y = exp(-t) - 5 * exp(-10 * t);
+	return loopSum(sqr(exp(-t * x[0]) - 5 * exp(-t * x[1]) - y), i);
+}
+
+template <class T>
+Expr<T> Bird()
+{
+	Expr<T> x;
+	return sin(x[0]) * exp(sqr(1 - cos(x[1]))) + cos(x[1]) * exp(sqr(1 - sin(x[0]))) + sqr(x[0] - x[1]);
+}
+
+template <class T>
+Expr<T> BoxBettsQuadraticSum()
+{
+	Expr<T> x;
+	Iterator i(1, 10);
+	Expr<T> t = -0.1 * Expr<T>(i);
+        Expr<T> a = exp(t*x[0]) - exp(t*x[1]);
+        Expr<T> b = x[2] * (exp(t) - exp(10 * t));
+	return loopSum(sqr(a-b), i);
+}
+
+template <class T>
+Expr<T> Brown(int n)
+{
+	Expr<T> x;
+	Iterator i(0, n - 2);
+	auto t = [=] { return i.Current() + 1; };
+	return loopSum(pow(sqr(x[i]), sqr(x[t]) + 1) + pow(sqr(x[t]), sqr(x[i]) + 1), i);
+}
+
+template <class T>
+Expr<T> Hartman3()
+{
+	Expr<T> x;
+	std::vector<std::vector<double>> a = { { 3, 10, 30 } , { 0.1, 10, 35 }, { 3, 10, 30 }, { 0.1, 10, 35 } };
+	std::vector<std::vector<double>> p = { { 0.3689, 0.1170, 0.2673 } ,{ 0.4699, 0.4387, 0.7470 },{ 0.1091, 0.8732, 0.5547 }, { 0.03815, 0.5743, 0.8828 } };
+	std::vector<double> c = {1.0, 1.2, 3.0, 3.2};
+	
+	Expr<T> y = 0.0;
+	for (int i = 0; i < 4; i++)
+	{
+		Expr<T> e = 0.0;
+		for (int j = 0; j < 3; j++)
+			e += a[i][j] * sqr(x[j] - p[i][j]);
+		y += c[i] * exp(-e);
+	}
+	return -y;
+}
+
+template <class T>
+Expr<T> Hartman6()
+{
+	Expr<T> x;
+	std::vector<std::vector<double>> a = { { 10, 3, 17, 3.5, 1.7, 8 } ,
+	                                       { 0.05, 10, 17, 0.1, 8, 14 },
+	                                       { 3, 3.5, 1.7, 10, 17, 8 }, 
+										   { 17, 8, 0.05, 10, 0.1, 14 } };
+	std::vector<std::vector<double>> p = { { 0.1312, 0.1696, 0.5569, 0.0124, 0.8283, 0.5886 },
+	                                       { 0.2329, 0.4135, 0.8307, 0.3736, 0.1004, 0.9991 },
+										   { 0.2348, 0.1451, 0.3522, 0.2883, 0.3047, 0.6650 },
+										   { 0.4047, 0.8828, 0.8732, 0.5743, 0.1091, 0.0381 } };
+	std::vector<double> c = { 1.0, 1.2, 3.0, 3.2 };
+
+	Expr<T> y = 0.0;
+	for (int i = 0; i < 4; i++)
+	{
+		Expr<T> e = 0.0;
+		for (int j = 0; j < 6; j++)
+			e += a[i][j] * sqr(x[j] - p[i][j]);
+		y += c[i] * exp(-e);
+	}
+	return -y;
+}
+
+template <class T>
+Expr<T> Ackley4()
+{
+	int n = 2;
+	Expr<T> x;
+	Iterator i(0, n - 2);
+	Expr<T> t = (Expr<T>)i + 1;
+	return loopSum(exp(1.0/pow(sqr(x[i]) + sqr(x[t]) ,5.0)) + 3*(cos(2*x[i]) + sin(2*x[t])), i);
+}
+
+template <class T>
+Expr<T> Factorial(int n)
+{
+	if (n == 0.0)
+		return 1.0;
+	Iterator i(1, n);
+	Expr<T> result = loopMul((Expr<T>)i, i);
+	return result;
+}
+
 
 void calcFunc(const std::string& name, Expr<double> expr, const std::vector<double>& vars)
 {
