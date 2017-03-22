@@ -12,7 +12,7 @@
  */
 #include <iostream>
 #include "expr.hpp"
-#include "testfuncs/testfuncs.hpp"
+#include <testfuncs/testfuncs.hpp>
 #include "interval/interval_air.hpp"
 #include <math.h>
 
