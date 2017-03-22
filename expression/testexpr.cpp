@@ -12,13 +12,13 @@
  */
 #include <iostream>
 #include "expr.hpp"
-#include "testfuncs.hpp"
+#include "testfuncs/testfuncs.hpp"
 #include "interval/interval_air.hpp"
-#define _USE_MATH_DEFINES
 #include <math.h>
 
 using namespace snowgoose::expression;
 using namespace snowgoose::interval;
+using namespace OPTITEST;
 
 void calcFunc(const std::string& name, Expr<double> expr, const std::vector<double>& vars)
 {
@@ -82,8 +82,8 @@ int main(int argc, char** argv) {
 	auto hartman6 = Hartman6<double>();
 	calcFunc("Hartman6", hartman6, {0.201690, 0.150011, 0.476874, 0.275332, 0.311652, 0.657301});
 
-	auto schewefel = Schewefel<Interval<double>>(2, 2);
-	calcInterval("Schewefel", schewefel, { { 2.0, 3.0 },{ 2.0, 3.0 } });
+	//auto schewefel = Schewefel<Interval<double>>(2, 2);
+	//calcInterval("Schewefel", schewefel, { { 2.0, 3.0 },{ 2.0, 3.0 } });
 
 	IL<double> list = { { 1.0, 4.0 },{ 2.0, 3.0 } };
 	auto minInterval = min(list);
