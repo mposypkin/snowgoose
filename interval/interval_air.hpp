@@ -379,13 +379,13 @@ namespace snowgoose {
 			T lb = m_lb;
 			T rb = m_rb;
 			if (m_rb < 0)
-				throw std::invalid_argument("The function pow is not define for negative numbers");
+				throw std::invalid_argument("The function Interval<T>::pow is not define for negative numbers");
 			if (m_lb < 0)
 				lb = 0.0;
 			if (exp < 0) //decreases monotonically
 			{
 				if (lb == 0.0)
-					throw std::invalid_argument("The function pow is not define for base=0.0 and exponent<0");
+					throw std::invalid_argument("The function Interval<T>::pow is not define for base=0.0 and exponent<0");
 				return Interval(std::pow(rb, exp), std::pow(lb, exp));
 			}
 			else //increases monotonically
