@@ -49,6 +49,7 @@ namespace snowgoose {
         }
 
 #if 0
+
         /**
          * Cuts a (L2) ball with center c and radius r from rectangle
          * @param s split dimension
@@ -83,7 +84,6 @@ namespace snowgoose {
             }
         }
 #endif
-        
 
         /**
          * Retrieves the number of the longest edge from the box
@@ -238,6 +238,23 @@ namespace snowgoose {
                     x[i] = box.mB[i];
                 else if (x[i] < box.mA[i])
                     x[i] = box.mA[i];
+            }
+        }
+
+        /**
+         * Computes the projection of a direction to a box at a given point
+         * @param d direction to project
+         * @param x point 
+         * @param box box to project to
+         */
+        template <class FT> static void projectDirection(FT* d, const FT* x, const Box<FT> &box) {
+            int n = box.mDim;
+            for (int i = 0; i < n; i++) {
+                if (x[i] >= box.mB[i]) {
+                    d[i] = SGMIN(0, d[i]);
+                } else if (x[i] <= box.mA[i]) {
+                    d[i] = SGMAX(0, d[i]);
+                }
             }
         }
 
