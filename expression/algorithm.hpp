@@ -91,7 +91,7 @@ namespace expression {
 		T Pow(const T& base, const T& exp) const
 		{
 			if(base < 0.0)
-				throw std::invalid_argument("The function pow is not define for negative base");
+				throw std::invalid_argument("The function FuncAlg::pow is not define for negative base");
 			return std::pow(base, exp);
 		};
 		T Abs(const T& t) const 

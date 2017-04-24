@@ -33,14 +33,12 @@ OPTIMOPT=-g
 #STATIC=-static
 
 #C++ 11 support on
-STD_OPT = -std=c++14
+STD_OPT = -std=c++14 -U__STRICT_ANSI__
 
 
 # Auxilary headers
 SNOWGOOSE=$(ROOT)../snowgoose
-COMPI=$(ROOT)../COMPI
-OPTITEST=$(ROOT)../OPTITEST
-EXTRA_INC = -I$(SNOWGOOSE) -I$(COMPI) -I$(OPTITEST)
+EXTRA_INC = -I$(SNOWGOOSE)
 
 
 #common options
@@ -57,7 +55,7 @@ COPTS=$(COMOPTS) $(ADDIT_INCS) $(PCOPTS)
 CPPOPTS= $(COMOPTS) $(ADDIT_INCS) $(PCPPOPTS)
 
 #Linker options for static linking
-LDFLAGS = -lm -ldl $(OPENMPLD) $(PTHREADLD) $(STATIC)
+LDFLAGS = -lm $(OPENMPLD) $(PTHREADLD) $(STATIC)
 
 
 MFLAGS = MPICC=$(MPICC) COPTS="$(COPTS)" CPPOPTS="$(CPPOPTS) LIBTOOL="$(LIBTOOL)"

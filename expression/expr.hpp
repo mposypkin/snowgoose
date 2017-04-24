@@ -46,7 +46,7 @@ namespace expression {
 		* @param rv is right expression
 		* @return expression
 		*/
-		Expr operator+=(const Expr& value);
+		Expr& operator+=(const Expr& value);
 		/**
 		* Subtracts the expression from given one
 		* @param value is left expression
@@ -343,9 +343,10 @@ namespace expression {
 		ptrNode<T> pNode(new Const<T>(lv));
 		return Expr<T>(ptrNode<T>(new Plus<T>(pNode, rv.node)));
 	}
-	template <class T> Expr<T> Expr<T>::operator+=(const Expr<T>& value)
+	template <class T> Expr<T>& Expr<T>::operator+=(const Expr<T>& value)
 	{
-		return *this + value;
+		*this = *this + value;
+		return *this;
 	}
 	template <class T> Expr<T> Expr<T>::operator-(const Expr<T>& value)
 	{
