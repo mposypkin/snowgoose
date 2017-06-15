@@ -195,6 +195,18 @@ namespace snowgoose {
                 z[i] = x[i] + y[i] * alpha;
         }
 
+       /**
+        * Component-wise multiplication of two vectors Multiply 
+        * @param n
+        * @param x
+        * @param y
+        * @param z
+        */
+        template <class T> static void vecMultVect(int n, const T * x, const T *y, T* z) {
+            for (int i = 0; i < n; i++)
+                z[i] = x[i] * y[i];
+        }
+
         /**
          * Prints the vector to string
          * @param n dimension 
@@ -329,7 +341,7 @@ namespace snowgoose {
             vecSaxpy(n, sourcev, nplane, a, resultv);
         }
 
-                
+
     };
 }
 #endif
