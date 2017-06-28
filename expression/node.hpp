@@ -26,7 +26,7 @@ namespace expression {
 	public:
 		Node(const vPtrNode<T> &childs) : m_childs(childs) {}
 		Node() {}
-		virtual T calc(const std::vector<T> &v, const Algorithm<T> &) = 0;
+		virtual T calc(const Algorithm<T> &) = 0;
 		friend std::ostream& operator<<(std::ostream & out, const Node<T>& v) { return v.prn(out);}
 		virtual std::ostream& prn(std::ostream & out) const = 0;
 	protected:
@@ -40,7 +40,7 @@ namespace expression {
 		int index;
 	public:
 		Var(int i) : index(i) {}
-		T calc(const std::vector<T> &v, const Algorithm<T> &alg) { return v[index]; };
+		T calc(const Algorithm<T> &alg) { return alg.CreateVar(index); };
 		std::ostream& prn(std::ostream & out) const { return out << "x[" << index << "]"; };
 	};
 
@@ -49,10 +49,10 @@ namespace expression {
 	class Const : public Node<T>
 	{
 	private:
-		T m_const;
+		double m_const;
 	public:
 		Const(double value) : m_const(value) {}
-		T calc(const std::vector<T> &v, const Algorithm<T> &) { return m_const; }
+		T calc(const Algorithm<T> &alg) { return alg.CreateConst(m_const); }
 		std::ostream& prn(std::ostream & out) const { return out << m_const; }
 	};
 
@@ -61,7 +61,7 @@ namespace expression {
 	{
 	public:
 		Plus(const ptrNode<T> &left, const ptrNode<T> &right) : Node<T>({ left, right }) {}
-		T calc(const std::vector<T> &v, const Algorithm<T> & alg) { return alg.Plus(this->m_childs[0]->calc(v, alg), this->m_childs[1]->calc(v, alg)); };
+		T calc(const Algorithm<T> & alg) { return alg.Plus(this->m_childs[0]->calc(alg), this->m_childs[1]->calc(alg)); };
 		std::ostream& prn(std::ostream & out) const { return out << "(" << *this->m_childs[0] << " + " << *this->m_childs[1] << ")"; }
 	};
 
@@ -70,7 +70,7 @@ namespace expression {
 	{
 	public:
 		Minus(const ptrNode<T> &left, const ptrNode<T> &right) : Node<T>({ left, right }) {}
-		T calc(const std::vector<T> &v, const Algorithm<T> & alg) { return alg.Minus(this->m_childs[0]->calc(v, alg), this->m_childs[1]->calc(v, alg)); }
+		T calc(const Algorithm<T> & alg) { return alg.Minus(this->m_childs[0]->calc(alg), this->m_childs[1]->calc(alg)); }
 		std::ostream& prn(std::ostream & out) const { return out << "(" << *this->m_childs[0] << " - " << *this->m_childs[1] << ")"; }
 	};
 
@@ -79,7 +79,7 @@ namespace expression {
 	{
 	public:
 		Mul(const ptrNode<T> &left,const ptrNode<T> &right) : Node<T>({ left, right }) {}
-		T calc(const std::vector<T> &v, const Algorithm<T> & alg) { return alg.Mul(this->m_childs[0]->calc(v, alg), this->m_childs[1]->calc(v, alg)); }
+		T calc(const Algorithm<T> & alg) { return alg.Mul(this->m_childs[0]->calc(alg), this->m_childs[1]->calc(alg)); }
 		std::ostream& prn(std::ostream & out) const { return out << *this->m_childs[0] << " * " << *this->m_childs[1]; }
 	};
 
@@ -88,7 +88,7 @@ namespace expression {
 	{
 	public:
 		Div(const ptrNode<T> &left, const ptrNode<T> &right) : Node<T>({ left, right }) {}
-		T calc(const std::vector<T> &v, const Algorithm<T> & alg) { return alg.Div(this->m_childs[0]->calc(v, alg), this->m_childs[1]->calc(v, alg)); };
+		T calc(const Algorithm<T> & alg) { return alg.Div(this->m_childs[0]->calc(alg), this->m_childs[1]->calc(alg)); };
 		std::ostream& prn(std::ostream & out) const { return out << "(" << *this->m_childs[0] << "/" << *this->m_childs[1] << ")"; }
 	};
 
@@ -97,7 +97,7 @@ namespace expression {
 	{
 	public:
 		Sin(const ptrNode<T> &node) : Node<T>({node}) {}
-		T calc(const std::vector<T> &v, const Algorithm<T> & alg) { return alg.Sin(this->m_childs[0]->calc(v, alg)); };
+		T calc(const Algorithm<T> & alg) { return alg.Sin(this->m_childs[0]->calc(alg)); };
 		std::ostream& prn(std::ostream & out) const { return out << "sin(" << *this->m_childs[0] << ")"; }
 	};
 
@@ -106,7 +106,7 @@ namespace expression {
 	{
 	public:
 		Cos(const ptrNode<T> &node) : Node<T>({ node }) {}
-		T calc(const std::vector<T> &v, const Algorithm<T> & alg) { return alg.Cos(this->m_childs[0]->calc(v, alg)); };
+		T calc(const Algorithm<T> & alg) { return alg.Cos(this->m_childs[0]->calc(alg)); };
 		std::ostream& prn(std::ostream & out) const { return out << "cos(" << *this->m_childs[0] << ")"; }
 	};
 
@@ -115,7 +115,7 @@ namespace expression {
 	{
 	public:
 		Tg(const ptrNode<T> &node) : Node<T>({ node }) {}
-		T calc(const std::vector<T> &v, const Algorithm<T> & alg) { return alg.Tan(this->m_childs[0]->calc(v, alg)); };
+		T calc(const Algorithm<T> & alg) { return alg.Tan(this->m_childs[0]->calc(alg)); };
 		std::ostream& prn(std::ostream & out) const { return out << "tg(" << *this->m_childs[0] << ")"; }
 	};
 
@@ -124,7 +124,7 @@ namespace expression {
 	{
 	public:
 		Ctg(const ptrNode<T> &node) : Node<T>({ node }) {}
-		T calc(const std::vector<T> &v, const Algorithm<T> & alg) { return alg.Ctg(this->m_childs[0]->calc(v, alg)); };
+		T calc(const Algorithm<T> & alg) { return alg.Ctg(this->m_childs[0]->calc(alg)); };
 		std::ostream& prn(std::ostream & out) const { return out << "ctg(" << *this->m_childs[0] << ")"; }
 	};
 
@@ -133,7 +133,7 @@ namespace expression {
 	{
 	public:
 		ArcCos(const ptrNode<T> &node) : Node<T>({ node }) {}
-		T calc(const std::vector<T> &v, const Algorithm<T> & alg) { return alg.ArcCos(this->m_childs[0]->calc(v, alg)); };
+		T calc(const Algorithm<T> & alg) { return alg.ArcCos(this->m_childs[0]->calc(alg)); };
 		std::ostream& prn(std::ostream & out) const { return out << "acos(" << *this->m_childs[0] << ")"; }
 	};
 
@@ -142,7 +142,7 @@ namespace expression {
 	{
 	public:
 		ArcSin(const ptrNode<T> &node) : Node<T>({ node }) {}
-		T calc(const std::vector<T> &v, const Algorithm<T> & alg) { return alg.ArcSin(this->m_childs[0]->calc(v, alg)); };
+		T calc(const Algorithm<T> & alg) { return alg.ArcSin(this->m_childs[0]->calc(alg)); };
 		std::ostream& prn(std::ostream & out) const { return out << "asin(" << *this->m_childs[0] << ")"; }
 	};
 
@@ -151,7 +151,7 @@ namespace expression {
 	{
 	public:
 		ArcTg(const ptrNode<T> &node) : Node<T>({ node }) {}
-		T calc(const std::vector<T> &v, const Algorithm<T> & alg) { return alg.ArcTan(this->m_childs[0]->calc(v, alg)); };
+		T calc(const Algorithm<T> & alg) { return alg.ArcTan(this->m_childs[0]->calc(alg)); };
 		std::ostream& prn(std::ostream & out) const { return out << "atg(" << *this->m_childs[0] << ")"; }
 	};
 
@@ -160,7 +160,7 @@ namespace expression {
 	{
 	public:
 		ArcCtg(const ptrNode<T> &node) : Node<T>({ node }) {}
-		T calc(const std::vector<T> &v, const Algorithm<T> & alg) { return alg.ArcCtg(this->m_childs[0]->calc(v, alg)); };
+		T calc(const Algorithm<T> & alg) { return alg.ArcCtg(this->m_childs[0]->calc(alg)); };
 		std::ostream& prn(std::ostream & out) const { return out << "actg(" << *this->m_childs[0] << ")"; }
 	};
 
@@ -169,7 +169,7 @@ namespace expression {
 	{
 	public:
 		Exp(const ptrNode<T> &node) : Node<T>({ node }) {}
-		T calc(const std::vector<T> &v, const Algorithm<T> & alg) { return alg.Exp(this->m_childs[0]->calc(v, alg)); };
+		T calc(const Algorithm<T> & alg) { return alg.Exp(this->m_childs[0]->calc(alg)); };
 		std::ostream& prn(std::ostream & out) const { return out << "exp(" << *this->m_childs[0] << ")"; }
 	};
 
@@ -178,7 +178,7 @@ namespace expression {
 	{
 	public:
 		Sqrt(const ptrNode<T> &node) : Node<T>({ node }) {}
-		T calc(const std::vector<T> &v, const Algorithm<T> & alg) { return alg.Sqrt(this->m_childs[0]->calc(v, alg)); };
+		T calc(const Algorithm<T> & alg) { return alg.Sqrt(this->m_childs[0]->calc(alg)); };
 		std::ostream& prn(std::ostream & out) const { return out << "sqrt(" << *this->m_childs[0] << ")"; }
 	};
 
@@ -187,7 +187,7 @@ namespace expression {
 	{
 	public:
 		Sqr(const ptrNode<T> &node) : Node<T>({ node }) {}
-		T calc(const std::vector<T> &v, const Algorithm<T> & alg) { return alg.Sqr(this->m_childs[0]->calc(v, alg)); };
+		T calc(const Algorithm<T> & alg) { return alg.Sqr(this->m_childs[0]->calc(alg)); };
 		std::ostream& prn(std::ostream & out) const { return out << "sqr(" << *this->m_childs[0] << ")"; }
 	};
 
@@ -198,8 +198,8 @@ namespace expression {
 		int exponent;
 	public:
 		PowInt(const ptrNode<T> &node, int exp) : Node<T>({ node }), exponent(exp) {}
-		T calc(const std::vector<T> &v, const Algorithm<T> & alg) { 
-			return alg.Pow(this->m_childs[0]->calc(v, alg), exponent); 
+		T calc(const Algorithm<T> & alg) { 
+			return alg.Pow(this->m_childs[0]->calc(alg), exponent); 
 		};
 		std::ostream& prn(std::ostream & out) const { return out << "pow(" << *this->m_childs[0] << "," << exponent << ")"; }
 	};
@@ -211,8 +211,8 @@ namespace expression {
 		T exponent;
 	public:
 		Pow(const ptrNode<T> &node, double exp) : Node<T>({ node }), exponent(exp) {}
-		T calc(const std::vector<T> &v, const Algorithm<T> & alg) {
-			return alg.Pow(this->m_childs[0]->calc(v, alg), exponent);
+		T calc(const Algorithm<T> & alg) {
+			return alg.Pow(this->m_childs[0]->calc(alg), exponent);
 		};
 		std::ostream& prn(std::ostream & out) const { return out << "pow(" << *this->m_childs[0] << "," << exponent << ")"; }
 	};
@@ -222,7 +222,7 @@ namespace expression {
 	{
 	public:
 		PowExpr(const ptrNode<T> &base, const ptrNode<T> &exp) : Node<T>({ base, exp }) {}
-		T calc(const std::vector<T> &v, const Algorithm<T> & alg) { return alg.Pow(this->m_childs[0]->calc(v, alg), this->m_childs[1]->calc(v, alg)); };
+		T calc(const Algorithm<T> & alg) { return alg.Pow(this->m_childs[0]->calc(alg), this->m_childs[1]->calc(alg)); };
 		std::ostream& prn(std::ostream & out) const { return out << "pow(" << *this->m_childs[0] << "," << *this->m_childs[1] << ")"; }
 	};
 
@@ -231,7 +231,7 @@ namespace expression {
 	{
 	public:
 		Abs(const ptrNode<T> &node) : Node<T>({ node }) {}
-		T calc(const std::vector<T> &v, const Algorithm<T> & alg) { return alg.Abs(this->m_childs[0]->calc(v, alg)); };
+		T calc(const Algorithm<T> & alg) { return alg.Abs(this->m_childs[0]->calc(alg)); };
 		std::ostream& prn(std::ostream & out) const { return out << "abs(" << *this->m_childs[0] << ")"; }
 	};
 
@@ -240,7 +240,7 @@ namespace expression {
 	{
 	public:
 		Ln(const ptrNode<T> &node) : Node<T>({ node }) {}
-		T calc(const std::vector<T> &v, const Algorithm<T> & alg) { return alg.Ln(this->m_childs[0]->calc(v, alg)); };
+		T calc(const Algorithm<T> & alg) { return alg.Ln(this->m_childs[0]->calc(alg)); };
 		std::ostream& prn(std::ostream & out) const { return out << "ln(" << *this->m_childs[0] << ")"; }
 	};
 
@@ -251,7 +251,7 @@ namespace expression {
 		double base;
 	public:
 		Log(const ptrNode<T> &node, double b) : Node<T>({ node }), base(b) {}
-		T calc(const std::vector<T> &v, const Algorithm<T> & alg) { return alg.Log(this->m_childs[0]->calc(v, alg), base); };
+		T calc(const Algorithm<T> & alg) { return alg.Log(this->m_childs[0]->calc(alg), base); };
 		std::ostream& prn(std::ostream & out) const { return out << "log(" << *this->m_childs[0] << "," << base << ")"; }
 	};
 
@@ -260,7 +260,7 @@ namespace expression {
 	{
 	public:
 		Min(const ptrNode<T> &lv, const ptrNode<T> &rv) : Node<T>({ lv,  rv }) {}
-		T calc(const std::vector<T> &v, const Algorithm<T> & alg) { return alg.Min(this->m_childs[0]->calc(v, alg), this->m_childs[1]->calc(v, alg)); };
+		T calc(const Algorithm<T> & alg) { return alg.Min(this->m_childs[0]->calc(alg), this->m_childs[1]->calc(alg)); };
 		std::ostream& prn(std::ostream & out) const { return out << "min(" << *this->m_childs[0] << "," << *this->m_childs[1] << ")"; }
 	};
 
@@ -269,7 +269,7 @@ namespace expression {
 	{
 	public:
 		Max(const ptrNode<T> &lv, const ptrNode<T> &rv) : Node<T>({ lv,  rv }) {}
-		T calc(const std::vector<T> &v, const Algorithm<T> & alg) { return alg.Max(this->m_childs[0]->calc(v, alg), this->m_childs[1]->calc(v, alg)); };
+		T calc(const Algorithm<T> & alg) { return alg.Max(this->m_childs[0]->calc(alg), this->m_childs[1]->calc(alg)); };
 		std::ostream& prn(std::ostream & out) const { return out << "max(" << *this->m_childs[0] << "," << *this->m_childs[1] << ")"; }
 	};
 
@@ -281,13 +281,13 @@ namespace expression {
 		IntervalBool result;
 	public:
 		ConditionNode(Conditions cond, const ptrNode<T> &lv, const ptrNode<T> &rv) : condition(cond), Node<T>({ lv,  rv }) {}
-		T calc(const std::vector<T> &v, const Algorithm<T> & alg) 
+		T calc(const Algorithm<T> & alg) 
 		{ 
 			throw "Invalid operation in ConditionNode.";
 		}
-		IntervalBool calcCondition(const std::vector<T> &v, const Algorithm<T> & alg)
+		IntervalBool calcCondition(const Algorithm<T> & alg)
 		{
-			return alg.Condition(condition, this->m_childs[0]->calc(v, alg), this->m_childs[1]->calc(v, alg));
+			return alg.Condition(condition, this->m_childs[0]->calc(alg), this->m_childs[1]->calc(alg));
 		}
 		std::ostream& prn(std::ostream & out) const { return out << " " << *this->m_childs[0] << condition << *this->m_childs[1] << " "; }
 	};
@@ -300,9 +300,9 @@ namespace expression {
 	public:
 		IfTrue(const ptrCNode<T> &cond, const ptrNode<T> &lv, const ptrNode<T> &rv) : conditionNode(cond), Node<T>({ lv,  rv }) {}
 
-		T calc(const std::vector<T> &v, const Algorithm<T> & alg)
+		T calc(const Algorithm<T> & alg)
 		{
-			return alg.IfTrue(conditionNode->calcCondition(v, alg), this->m_childs[0]->calc(v, alg), this->m_childs[1]->calc(v, alg));
+			return alg.IfTrue(conditionNode->calcCondition(alg), this->m_childs[0]->calc(alg), this->m_childs[1]->calc(alg));
 		}
 		std::ostream& prn(std::ostream & out) const { return out << "ifThen(" << *conditionNode << " , " << *this->m_childs[0] << " , " << *this->m_childs[1] << ")"; }
 	};
@@ -348,7 +348,7 @@ namespace expression {
 		Iterator iterator;
 	public:
 		IteratorNode(const Iterator &i) : iterator(i) {}
-		T calc(const std::vector<T> &v, const Algorithm<T> & alg)
+		T calc(const Algorithm<T> & alg)
 		{
 			return iterator.Current();
 		}
@@ -361,10 +361,10 @@ namespace expression {
 		Iterator iterator;
 	public:
 		Index(const Iterator &i) : iterator(i) {}
-		T calc(const std::vector<T> &v, const Algorithm<T> & alg)
+		T calc(const Algorithm<T> & alg)
 		{
 			int index = iterator.Current();
-			return v[index];
+			return alg.CreateVar(index);
 		}
 		std::ostream& prn(std::ostream & out) const { return out << "x[i]"; };
 	};
@@ -375,9 +375,9 @@ namespace expression {
 		std::function<int()> func;
 	public:
 		CalcIndex(const std::function<int()> &f) : func(f) {}
-		T calc(const std::vector<T> &v, const Algorithm<T> & alg)
+		T calc(const Algorithm<T> & alg)
 		{
-			return v[func()];
+			return alg.CreateVar(func());
 		}
 		std::ostream& prn(std::ostream & out) const { return out << "x[calc i]"; };
 	};
@@ -388,10 +388,10 @@ namespace expression {
 		Expr<T> expr;
 	public:
 		ExprIndex(const Expr<T>& e) : expr(e) {}
-		T calc(const std::vector<T> &v, const Algorithm<T> & alg)
+		T calc(const Algorithm<T> & alg)
 		{
-			size_t index = (size_t)((double)expr.calc(v, alg));
-			return v[index];
+			size_t index = (size_t)((double)expr.calc(alg));
+			return alg.CreateVar(index);
 		}
 		std::ostream& prn(std::ostream & out) const { return out << "x[" << expr << "]"; };
 	};
@@ -403,12 +403,12 @@ namespace expression {
 		Iterator iterator;
 	public:
 		CycleSum(const ptrNode<T> &node, const Iterator &i) : Node<T>({ node }), iterator(i) {}
-		T calc(const std::vector<T> &v, const Algorithm<T> & alg) {
+		T calc(const Algorithm<T> & alg) {
 			T result = T();
 			iterator.Reset();
 			while (iterator.CanIterate())
 			{
-				result = alg.Plus(result, this->m_childs[0]->calc(v, alg));
+				result = alg.Plus(result, this->m_childs[0]->calc(alg));
 				iterator.Next();
 			}
 			return result;
@@ -423,14 +423,14 @@ namespace expression {
 		Iterator iterator;
 	public:
 		CycleMul(const ptrNode<T> &node, const Iterator &i) : Node<T>({ node }), iterator(i) {}
-		T calc(const std::vector<T> &v, const Algorithm<T> & alg) {
+		T calc(const Algorithm<T> & alg) {
 			T result = 1.0;
 			iterator.Reset();
 			if (!iterator.CanIterate())
 				return T();
 			while (iterator.CanIterate())
 			{
-				result = alg.Mul(result, this->m_childs[0]->calc(v, alg));
+				result = alg.Mul(result, this->m_childs[0]->calc(alg));
 				iterator.Next();
 			}
 			return result;
