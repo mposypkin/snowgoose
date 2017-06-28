@@ -11,7 +11,6 @@
  * Created on January 20, 2017, 9:13 AM
  */
 #include <iostream>
-#define _USE_MATH_DEFINES
 #include <math.h>
 #include "interval_air.hpp"
 
@@ -41,8 +40,11 @@ int main(int argc, char** argv) {
     std::cout << a * b;
 
     Interval<double> x(0.9, 1.1), y(-0.1, 0.1);
-    Interval<double> z = -20.0 * exp(-0.2 * sqrt(0.5 * (sqr(x) + sqr(y)))) - exp(0.5*(cos(2.0 * M_PI * x) + cos(2.0 * M_PI * y))) + 20.0 + M_E;
+    Interval<double> z = -20.0 * exp(-0.2 * sqrt(0.5 * (sqr(x) + sqr(y)))) - 
+                     exp(0.5*(cos(2.0 * M_PI * x) + 
+                     cos(2.0 * M_PI * y))) + 20.0 + M_E;
     std::cout << z;
+
     Interval<double> z2 = sin(1.0/x);
     std::cout << z2;
     

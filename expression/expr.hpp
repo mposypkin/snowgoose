@@ -306,7 +306,7 @@ namespace expression {
 		* @param alg is algorithm. It allows to calculate either value of function or interval estimation of function.
 		* @return real number or interval
 		*/
-		T calc(const std::vector<T> &v, const Algorithm<T> & alg) const;
+		T calc(const Algorithm<T> & alg) const;
 		/**
 		* Output the expression
 		* @param out is output stream
@@ -541,9 +541,9 @@ namespace expression {
 		return Expr<T>(ptrNode<T>(new CycleMul<T>(value.node, i)));
 	}
 
-	template <class T> T Expr<T>::calc(const std::vector<T> &v, const Algorithm<T> & alg) const
+	template <class T> T Expr<T>::calc(const Algorithm<T> & alg) const
 	{
-		return node->calc(v, alg);
+		return node->calc(alg);
 	}
 
 	template <class T> std::ostream& operator<<(std::ostream & out, const Expr<T>& v)

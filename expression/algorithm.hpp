@@ -4,9 +4,11 @@
 #include <iostream> 
 #include <memory>
 #include <cmath>
+#include <vector>
+
 #include "interval/interval_air.hpp"
 #include "interval/enums.h"
-#include <cmath>
+
 
 using namespace snowgoose::interval;
 
@@ -43,6 +45,8 @@ namespace expression {
 		virtual T Max(const T& left, const T& right) const = 0;
 		virtual T IfTrue(IntervalBool ib, const T& left, const T& right) const = 0;
 		virtual IntervalBool Condition(Conditions condition, const T& left, const T& right) const = 0;
+        virtual T CreateVar(int index) const = 0;
+        virtual T CreateConst(double cnst) const = 0;
 	};
 	/**
 	* Algorithm to calculate value of a function
@@ -50,7 +54,10 @@ namespace expression {
 	template<class T=double>
 	class FuncAlg : public Algorithm<T>
 	{
+    private:
+        std::vector<T> m_v;
 	public:
+        FuncAlg(const std::vector<T> &v) : m_v(v) {}
 		T Plus(const T& left, const T& right) const { return left + right; }
 		T Minus(const T& left, const T& right) const { return left - right; }
 		T Mul(const T& left, const T& right) const { return left * right; }
@@ -132,6 +139,8 @@ namespace expression {
 			}
 			throw std::invalid_argument("Invalid condition.");
 		}
+        T CreateVar(int index) const { return m_v[index]; }      
+        T CreateConst(double cnst) const { return cnst; };
 	};
 
 
@@ -141,7 +150,10 @@ namespace expression {
 	template<class T=double>
 	class InterEvalAlg : public Algorithm<Interval<T>>
 	{
+    private:
+        std::vector<Interval<T>> m_v;
 	public:
+        InterEvalAlg(const std::vector<Interval<T>> &v) : m_v(v) {}
 		Interval<T> Plus(const Interval<T>& left, const Interval<T>& right) const { return left + right; }
 		Interval<T> Minus(const Interval<T>& left, const Interval<T>& right) const { return left - right; }
 		Interval<T> Mul(const Interval<T>& left, const Interval<T>& right) const { return left * right; }
@@ -184,6 +196,10 @@ namespace expression {
 			}
 			throw std::invalid_argument("Invalid condition.");
 		}
+        Interval<T>  CreateVar(int index) const { return m_v[index]; }      
+        Interval<T>  CreateConst(double cnst) const { return cnst; };
+
+            
 	};
 }
 }

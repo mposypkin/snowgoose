@@ -12,6 +12,7 @@
  */
 #include <iostream>
 #include "expr.hpp"
+#include "algder.hpp"
 #include "interval/interval_air.hpp"
 #include <math.h>
 
@@ -147,6 +148,13 @@ Expr<T> Ackley4()
 }
 
 template <class T>
+Expr<T> Leon()
+{
+	Expr<T> x;
+	return 100 * sqr(x[1] - sqr(x[0])) + sqr(1 - x[0]);
+}
+
+template <class T>
 Expr<T> Factorial(int n)
 {
 	if (n == 0.0)
@@ -156,20 +164,62 @@ Expr<T> Factorial(int n)
 	return result;
 }
 
+template <class T>
+Expr<T> Ball()
+{
+	Expr<T> x;
+    Expr<T> rad = (M_PI/180) * x[0];
+    Expr<T> t = sqr(x[1]*cos(rad));
+    Expr<T> f=(t/32.0)*(tg(rad)+sqrt(sqr(tg(rad)) + 64.0*x[2]/t));
+    return f;
+}
+
 
 void calcFunc(const std::string& name, Expr<double> expr, const std::vector<double>& vars)
 {
-	auto result = expr.calc(vars, FuncAlg<double>());	
+	auto result = expr.calc(FuncAlg<double>(vars));	
 	std::cout << name << ": " << result << '\n';
 }
 
 void calcInterval(const std::string& name, Expr<Interval<double>> expr, const std::vector<Interval<double>>& vars)
 {
-	auto result = expr.calc(vars, InterEvalAlg<double>());
+	auto result = expr.calc(InterEvalAlg<double>(vars));
+	std::cout << name << ": " << result;
+}
+
+void calcDerivative(const std::string& name, Expr<ValDer<double>> expr, const std::vector<double>& vars)
+{
+	auto result = expr.calc(ValDerAlg<double>(vars));	
+	std::cout << name << ": " << result << '\n';
+}
+
+void calcDerivativeInterval(const std::string& name, Expr<ValDer<Interval<double>>> expr, const std::vector<Interval<double>>& vars)
+{
+	auto result = expr.calc(IntervalDerAlg<double>(vars));
 	std::cout << name << ": " << result;
 }
 
 int main(int argc, char** argv) {
+   
+    //function value
+	auto expr = Ball<double>();
+    std::cout << "Ball expression: \n" << expr << "\n\n";
+    calcFunc("Ball func", expr, { 20.0, 44.0, 9.0 });
+    
+    //interval estimation of the function
+    auto exprInterval = Ball<Interval<double>>();
+    calcInterval("Ball interval", exprInterval, { {19, 21 }, {43.0, 45.0}, {8.0, 10.0} });
+    
+    //gradient of the function
+    auto exprDer = Ball<ValDer<double>>();
+    calcDerivative("Ball gradient", exprDer, { 20.0, 44.0, 9.0 });
+    
+    //interval estimation of the function
+    auto exprDerInt = Ball<ValDer<Interval<double>>>();
+    calcDerivativeInterval("Ball interval gradient", exprDerInt, { {19, 21 }, {43.0, 45.0}, {8.0, 10.0} });
+}
+
+int main_(int argc, char** argv) {
 	
 	auto expr = Ackley1<double>(2);	
 	std::cout << "Ackley1: \n" << expr;
