@@ -11,17 +11,28 @@ namespace snowgoose {
 
     template <class FT> struct Box {
 
-        Box(int dim = 0) {
+        /**
+         * Default constructor
+         * Constructs the box of the given dimension with arbitrary bounds
+         */
+        Box(int dim) {
             mDim = dim;
             mA = new FT[dim];
             mB = new FT[dim];
         }
 
+        /**
+         * Destructor
+         */
         ~Box() {
             delete[] mA;
             delete[] mB;
         }
 
+        /**
+         * Copy constructor
+         * @param b box to construct from
+         */
         Box(const Box& b) {
             mDim = b.mDim;
             mA = new FT[mDim];
@@ -30,18 +41,23 @@ namespace snowgoose {
             std::memcpy(mB, b.mB, sizeof (FT) * mDim);
         }
 
+        /**
+         * Move constructor
+         * @param b box to construct from
+         */
         Box(Box&& b) {
             mA = b.mA;
             mB = b.mB;
             mDim = b.mDim;
 
+            b.mDim = 0;
             b.mA = nullptr;
             b.mB = nullptr;
         }
 
         /**
          * Move assignment
-         * @param b
+         * @param b box to assign
          * @return 
          */
         Box& operator=(Box&& b) {
@@ -51,6 +67,7 @@ namespace snowgoose {
             mB = b.mB;
             mDim = b.mDim;
 
+            b.mDim = 0;
             b.mA = nullptr;
             b.mB = nullptr;
         }
