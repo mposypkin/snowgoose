@@ -10,6 +10,7 @@
 #include <iostream>
 #include <vector>
 #include <common/utilmacro.hpp>
+#include <common/sgerrcheck.hpp>
 #include "box.hpp"
 
 namespace snowgoose {
