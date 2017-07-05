@@ -37,6 +37,12 @@ namespace snowgoose {
                 Grad operator/(const T &y) const;
                 template<class T2> friend std::ostream& operator<<(std::ostream & out, const Grad<T2> &y);
                 std::size_t size() const {return m_grad.size();}
+                bool IsZero() const{
+                    for(const T &d : m_grad)
+                        if(d!=0.0) 
+                            return false;
+                    return true;
+                }
             private:
                 std::vector<T> m_grad;   
         };

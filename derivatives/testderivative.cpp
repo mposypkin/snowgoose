@@ -13,6 +13,7 @@
 #include <iostream>
 #include <math.h>
 #include "valder.hpp"
+#include "intervalder.hpp"
 #include "grad.hpp"
 #include "interval/interval_air.hpp"
 
@@ -51,19 +52,19 @@ void Test3()
 
 void Test4()
 {
-    ValDer<Interval<double>> x({0.99, 1.01}, {1.0});
-    ValDer<Interval<double>> y = cos(x);
+    IntervalDer<double> x({0.99, 1.01}, {1.0});
+    IntervalDer<double> y = cos(x);
     std::cout << "Test4: " << y;
 }
 
 void Test5()
 {
-    ValDer<Interval<double>> a({ 19, 21 }, { 1.0, 0.0, 0.0 });
-    ValDer<Interval<double>> v({ 43.0, 45 }, { 0.0, 1.0, 0.0 });
-    ValDer<Interval<double>> h({ 8.0, 10.0 }, { 0.0, 0.0, 1.0 });
-    ValDer<Interval<double>> rad = (M_PI/180) * a;
-    ValDer<Interval<double>> t = sqr(v*cos(rad));
-    ValDer<Interval<double>> f=(t/32.0)*(tg(rad)+sqrt(sqr(tg(rad)) + 64.0*h/t));
+    IntervalDer<double> a({ 19, 21 }, { 1.0, 0.0, 0.0 });
+    IntervalDer<double> v({ 43.0, 45 }, { 0.0, 1.0, 0.0 });
+    IntervalDer<double> h({ 8.0, 10.0 }, { 0.0, 0.0, 1.0 });
+    IntervalDer<double> rad = (M_PI/180) * a;
+    IntervalDer<double> t = sqr(v*cos(rad));
+    IntervalDer<double> f=(t/32.0)*(tg(rad)+sqrt(sqr(tg(rad)) + 64.0*h/t));
     std::cout << "Test6: " <<  f;
 }
 

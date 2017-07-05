@@ -16,11 +16,8 @@
 
 #include <iostream> 
 #include <cmath>
-#include "interval/interval_air.hpp"
 #include "grad.hpp"
-#include "helpfunc.hpp"
 
-using namespace snowgoose::interval;
 
 namespace snowgoose {
   namespace derivative {
@@ -30,34 +27,42 @@ namespace snowgoose {
             ValDer(T val, const Grad<T> &der) : m_val(val), m_der(der)
             {
             }
-
+            
+            using value_type = T;
             ValDer operator+(const ValDer &y) const;
             ValDer operator-(const ValDer &y) const;
             ValDer operator*(const ValDer &y) const;
             ValDer operator/(const ValDer &y) const;            
             ValDer operator^(int exp) const;
+
             
-            template<class T2, class T3> friend ValDer<T2> operator+(T3 t, const ValDer<T2> &y);
-            template<class T2, class T3> friend ValDer<T2> operator-(T3 t, const ValDer<T2> &y);
-            template<class T2, class T3> friend ValDer<T2> operator*(T3 t, const ValDer<T2> &y);
-            template<class T2, class T3> friend ValDer<T2> operator/(T3 t, const ValDer<T2> &y);           
-            template<class T2, class T3> friend ValDer<T2> operator+(const ValDer<T2> &y, T3 t);
-            template<class T2, class T3> friend ValDer<T2> operator-(const ValDer<T2> &y, T3 t);
-            template<class T2, class T3> friend ValDer<T2> operator*(const ValDer<T2> &y, T3 t);
-            template<class T2, class T3> friend ValDer<T2> operator/(const ValDer<T2> &y, T3 t);
+            template<class T2> friend ValDer<T2> operator+(T2 t, const ValDer<T2> &y);
+            template<class T2> friend ValDer<T2> operator-(T2 t, const ValDer<T2> &y);
+            template<class T2> friend ValDer<T2> operator*(T2 t, const ValDer<T2> &y);
+            template<class T2> friend ValDer<T2> operator/(T2 t, const ValDer<T2> &y);           
+            template<class T2> friend ValDer<T2> operator+(const ValDer<T2> &y, T2 t);
+            template<class T2> friend ValDer<T2> operator-(const ValDer<T2> &y, T2 t);
+            template<class T2> friend ValDer<T2> operator*(const ValDer<T2> &y, T2 t);
+            template<class T2> friend ValDer<T2> operator/(const ValDer<T2> &y, T2 t);
                        
-            template<class T2> friend ValDer<T2>sqr(const ValDer<T2> &x);
-            template<class T2> friend ValDer<T2>sqrt(const ValDer<T2> &x);            
-            template<class T2> friend ValDer<T2>sin(const ValDer<T2> &x);
-            template<class T2> friend ValDer<T2>cos(const ValDer<T2>&x);            
-            template<class T2> friend ValDer<T2>tg(const ValDer<T2> &x);           
-            template<class T2> friend ValDer<T2>asin(const ValDer<T2> &x);
-            template<class T2> friend ValDer<T2>acos(const ValDer<T2> &x);           
-            template<class T2> friend ValDer<T2>ln(const ValDer<T2> &x);
-            template<class T2> friend ValDer<T2>exp(const ValDer<T2> &x);
+            template<class T2> friend ValDer<T2> sqr(const ValDer<T2> &x);
+            template<class T2> friend ValDer<T2> sqrt(const ValDer<T2> &x);            
+            template<class T2> friend ValDer<T2> sin(const ValDer<T2> &x);
+            template<class T2> friend ValDer<T2> cos(const ValDer<T2>&x);            
+            template<class T2> friend ValDer<T2> tg(const ValDer<T2> &x);  
+            template<class T2> friend ValDer<T2> ctg(const ValDer<T2> &x); 
+            template<class T2> friend ValDer<T2> asin(const ValDer<T2> &x);
+            template<class T2> friend ValDer<T2> acos(const ValDer<T2> &x); 
+            template<class T2> friend ValDer<T2> atg(const ValDer<T2> &x);
+            template<class T2> friend ValDer<T2> actg(const ValDer<T2> &x); 
+            template<class T2> friend ValDer<T2> ln(const ValDer<T2> &x);
+            template<class T2> friend ValDer<T2> exp(const ValDer<T2> &x);
+            template<class T2> friend ValDer<T2> pow(const T2 &base, const ValDer<T2> &exp);
+            template<class T2> friend ValDer<T2> abs(const ValDer<T2> &x);
             
             template<class T2> friend std::ostream& operator<<(std::ostream & out, const ValDer<T2> &x);
-            
+            T value() const {return m_val;}
+            Grad<T> grad() const {return m_der;}
         private:
             T m_val;
             Grad<T> m_der;
@@ -80,97 +85,142 @@ namespace snowgoose {
     
     template<class T> ValDer<T> ValDer<T>::operator/(const ValDer &y) const
     {
+        if (y.m_val == 0.0)
+            throw std::invalid_argument("Invalid operation. Divide by 0.0.");
         return ValDer(m_val / y.m_val, (m_der * y.m_val - m_val * y.m_der)/(y.m_val * y.m_val) );
     }
     
     template<class T> ValDer<T> ValDer<T>::operator^(int exp) const
     {
-        return ValDer(pow_(m_val, exp), (double)exp * pow_(m_val, exp - 1.0) * m_der);//error control is needed
+        return ValDer(std::pow(m_val, exp), (double)exp * std:: pow(m_val, exp - 1.0) * m_der);
     }
     
-    template<class T2, class T3> ValDer<T2>operator+(T3 t, const ValDer<T2>&y)
+    template<class T2> ValDer<T2>operator+(T2 t, const ValDer<T2>&y)
     {
         return ValDer<T2>(t, Grad<T2>(y.m_der.size(), 0.0)) + y;
     }
     
-    template<class T2, class T3> ValDer<T2>operator-(T3 t, const ValDer<T2>&y)
+    template<class T2> ValDer<T2>operator-(T2 t, const ValDer<T2>&y)
     {
         return ValDer<T2>(t, Grad<T2>(y.m_der.size(), 0.0)) - y;
     }
     
-    template<class T2, class T3> ValDer<T2>operator*(T3 t, const ValDer<T2>&y)
+    template<class T2> ValDer<T2>operator*(T2 t, const ValDer<T2>&y)
     {
         return ValDer<T2>(t, Grad<T2>(y.m_der.size(), 0.0)) * y;
     }
     
-    template<class T2, class T3> ValDer<T2>operator/(T3 t, const ValDer<T2>&y)
+    template<class T2> ValDer<T2>operator/(T2 t, const ValDer<T2>&y)
     {
         return ValDer<T2>(t, Grad<T2>(y.m_der.size(), 0.0)) / y;;
     }
     
-    template<class T2, class T3> ValDer<T2>operator+(const ValDer<T2>&y, T3 t)
+    template<class T2> ValDer<T2>operator+(const ValDer<T2>&y, T2 t)
     {
         return t+y;
     }
     
-    template<class T2, class T3> ValDer<T2>operator-(const ValDer<T2>&y, T3 t)
+    template<class T2> ValDer<T2>operator-(const ValDer<T2>&y, T2 t)
     {
         return y-ValDer<T2>(t, Grad<T2>(y.m_der.size(), 0.0));
     }
     
-    template<class T2, class T3> ValDer<T2>operator*(const ValDer<T2>&y, T3 t)
+    template<class T2> ValDer<T2>operator*(const ValDer<T2>&y, T2 t)
     {
         return t*y;
     }
     
-    template<class T2, class T3> ValDer<T2>operator/(const ValDer<T2>&y, T3 t)
+    template<class T2> ValDer<T2>operator/(const ValDer<T2>&y, T2 t)
     {
         return y/ValDer<T2>(t, Grad<T2>(y.m_der.size(), 0.0));
     }
     
-    template<class T2> ValDer<T2>sqr(const ValDer<T2>&x)
+    template<class T2> ValDer<T2> sqr(const ValDer<T2>&x)
     {
         return ValDer<T2>(x.m_val * x.m_val, 2.0 * x.m_val * x.m_der);
     }
     
-    template<class T2> ValDer<T2>sqrt(const ValDer<T2>&x)
+    template<class T2> ValDer<T2> sqrt(const ValDer<T2>&x)
     {
-        return ValDer<T2>(sqrt_(x.m_val), x.m_der/(2.0 * sqrt_(x.m_val)));//error control is needed
+        if(x.m_val < 0.0)
+            throw std::invalid_argument("The function ValDer<T>::sqrt is not defined for negative numbers");
+        auto sq = std::sqrt(x.m_val);
+        return ValDer<T2>(sq, x.m_der/(2.0 * sq));
     }
     
-    template<class T2> ValDer<T2>sin(const ValDer<T2>&x)
+    template<class T2> ValDer<T2> sin(const ValDer<T2>&x)
     {
-        return ValDer<T2>(sin_(x.m_val), cos_(x.m_val) * x.m_der);
+        return ValDer<T2>(std::sin(x.m_val), std::cos(x.m_val) * x.m_der);
     }
     
-    template<class T2> ValDer<T2>cos(const ValDer<T2>&x)
+    template<class T2> ValDer<T2> cos(const ValDer<T2>&x)
     {
-        return ValDer<T2>(cos_(x.m_val), -1.0 * sin_(x.m_val) * x.m_der);
+        return ValDer<T2>(std::cos(x.m_val), -1.0 * std::sin(x.m_val) * x.m_der);
     }
       
-    template<class T2> ValDer<T2>tg(const ValDer<T2>&x)
+    template<class T2> ValDer<T2> tg(const ValDer<T2>&x)
     {
-        return ValDer<T2>(tg_(x.m_val), x.m_der/(cos_(x.m_val) * cos_(x.m_val)));//error control is needed
+        auto cs = std::cos(x.m_val);
+        return ValDer<T2>(std::tan(x.m_val), x.m_der/(cs * cs));
     }
     
-    template<class T2> ValDer<T2>asin(const ValDer<T2>&x)
+    template<class T2> ValDer<T2> ctg(const ValDer<T2>&x)
     {
-        return ValDer<T2>(asin_(x.m_val), x.m_der/sqrt_(1.0 - x.m_val*x.m_val ));//error control is needed
+        auto sn = std::sin(x.m_val);
+        return ValDer<T2>(1.0/std::tan(x.m_val), (-1.0 * x.m_der)/(sn * sn));
     }
     
-    template<class T2> ValDer<T2>acos(const ValDer<T2>&x)
+    template<class T2> ValDer<T2> asin(const ValDer<T2>&x)
     {
-        return ValDer<T2>(acos_(x.m_val), -1.0 * x.m_der/sqrt_(1.0 - x.m_val*x.m_val ));//error control is needed
+        if(x.m_val < -1.0 || x.m_val > 1.0)
+            throw std::invalid_argument("Invalid argument in ValDer::asin. The argument is out of this interval [-1,1]."); 
+        return ValDer<T2>(std::asin(x.m_val), x.m_der/std::sqrt(1.0 - x.m_val*x.m_val ));
     }
     
-    template<class T2> ValDer<T2>ln(const ValDer<T2>&x)
+    template<class T2> ValDer<T2> acos(const ValDer<T2>&x)
     {
-        return ValDer<T2>(ln_(x.m_val), x.m_der/x.m_val);//error control is needed
+        if(x.m_val < -1.0 || x.m_val > 1.0)
+            throw std::invalid_argument("Invalid argument in ValDer::acos. The argument is out of this interval [-1,1].");        
+        return ValDer<T2>(std::acos(x.m_val), (-1.0 * x.m_der)/std::sqrt(1.0 - x.m_val*x.m_val ));
     }
     
-    template<class T2> ValDer<T2>exp(const ValDer<T2>&x)
+    template<class T2> ValDer<T2> atg(const ValDer<T2>&x)
     {
-        return ValDer<T2>(exp_(x.m_val), x.m_der * exp_(x.m_val));//optimization
+        return ValDer<T2>(std::atan(x.m_val), x.m_der/(1.0 + x.m_val*x.m_val ));
+    }
+    
+    template<class T2> ValDer<T2> actg(const ValDer<T2>&x)
+    {
+        return ValDer<T2>(M_PI_2 - std::atan(x.m_val), (-1.0 * x.m_der)/(1.0 + x.m_val*x.m_val ));
+    }
+    
+    template<class T2> ValDer<T2> ln(const ValDer<T2>&x)
+    {
+        if (x.m_val < 0)
+            throw std::invalid_argument("The function ValDer<T>::ln is not define for negative numbers");
+        return ValDer<T2>(std::log(x.m_val), x.m_der/x.m_val);
+    }
+    
+    template<class T2> ValDer<T2> exp(const ValDer<T2>&x)
+    {
+        auto ex = std::exp(x.m_val);
+        return ValDer<T2>(ex, x.m_der * ex);
+    }
+    
+    template<class T2> ValDer<T2> pow(const T2 &base, const ValDer<T2> &exp)
+    {
+        auto pw = std::pow(base, exp.m_val);
+        return ValDer<T2>(pw, exp.m_der * pw * std::log(base));
+    }
+    
+    template<class T2> ValDer<T2> abs(const ValDer<T2>&x)
+    {
+        if(x.m_val==0.0)
+            throw std::invalid_argument("Invalid argument in ValDer::abs. There isn't derivation at zero.");
+        else if(x.m_val < 0.0)
+            return ValDer<T2>(std::abs(x.m_val), -1.0 * x.m_der);
+        else
+            return ValDer<T2>(std::abs(x.m_val), x.m_der);
     }
     
     template<class T2> std::ostream& operator<<(std::ostream & out, const ValDer<T2> &x)

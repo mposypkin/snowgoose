@@ -128,13 +128,13 @@ namespace snowgoose {
 			*/
 			IntervalBool operator <= (const Interval &y) const;
 			/**
-			* Is left interval less then or equal to the right number
+			* Is left interval less then or equals to the right number
 			* @param y is right number
 			* @return IntervalBool
 			*/
 			IntervalBool operator <= (T y) const;
 			/**
-			* Is left interval more then or equal to the right interval
+			* Is left interval more then or equals to the right interval
 			* @param y is right number
 			* @return IntervalBool
 			*/
@@ -145,6 +145,30 @@ namespace snowgoose {
 			* @return IntervalBool
 			*/
 			IntervalBool operator >= (T y) const;
+            /**
+			* Is left interval equals to the right interval
+			* @param y is right number
+			* @return IntervalBool
+			*/
+			IntervalBool operator == (const Interval &y) const;
+			/**
+			* Is left interval equals to the right number
+			* @param y is right number
+			* @return IntervalBool
+			*/
+			IntervalBool operator == (T y) const;
+            /**
+			* Is left interval doesn't equal to the right interval
+			* @param y is right number
+			* @return IntervalBool
+			*/
+			IntervalBool operator != (const Interval &y) const;
+			/**
+			* Is left interval doesn't equal to the right number
+			* @param y is right number
+			* @return IntervalBool
+			*/
+			IntervalBool operator != (T y) const;
 			/**
 			* Is left number less than right interval
 			* @param x is left number
@@ -457,6 +481,10 @@ namespace snowgoose {
 		template<class T> IntervalBool operator <= (T x, const Interval<T> &y) { return x <= y.m_lb ? IntervalBool::True : x >= y.m_rb ? IntervalBool::False : IntervalBool::Intermadiate; }
 		template<class T> IntervalBool Interval<T>::operator >= (const Interval &y) const { return y <= (*this); }
 		template<class T> IntervalBool Interval<T>::operator >= (T y) const { return y <= (*this); }
+        template<class T> IntervalBool Interval<T>::operator == (const Interval &y) const { return m_lb == y.m_lb && m_rb == y.m_rb ? IntervalBool::True : IntervalBool::False; }
+		template<class T> IntervalBool Interval<T>::operator == (T y) const { return m_lb == y && m_rb == y ? IntervalBool::True : IntervalBool::False; }
+        template<class T> IntervalBool Interval<T>::operator != (const Interval &y) const { return m_lb != y.m_lb || m_rb != y.m_rb ? IntervalBool::True : IntervalBool::False; }
+		template<class T> IntervalBool Interval<T>::operator != (T y) const { return m_lb != y || m_rb != y ? IntervalBool::True : IntervalBool::False; }
 		template<class T> IntervalBool operator >= (T x, const Interval<T> &y) { return y <= x; }
 
 		template<class T> Interval<T> min(const IL<T>& list)

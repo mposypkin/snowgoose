@@ -189,13 +189,13 @@ void calcInterval(const std::string& name, Expr<Interval<double>> expr, const st
 
 void calcDerivative(const std::string& name, Expr<ValDer<double>> expr, const std::vector<double>& vars)
 {
-	auto result = expr.calc(ValDerAlg<double>(vars));	
+	ValDer<double> result = expr.calc(ValDerAlg<double>(vars));	
 	std::cout << name << ": " << result << '\n';
 }
 
-void calcDerivativeInterval(const std::string& name, Expr<ValDer<Interval<double>>> expr, const std::vector<Interval<double>>& vars)
+void calcDerivativeInterval(const std::string& name, Expr<IntervalDer<double>> expr, const std::vector<Interval<double>>& vars)
 {
-	auto result = expr.calc(IntervalDerAlg<double>(vars));
+	IntervalDer<double> result = expr.calc(IntervalDerAlg<double>(vars));
 	std::cout << name << ": " << result;
 }
 
@@ -215,7 +215,7 @@ int main(int argc, char** argv) {
     calcDerivative("Ball gradient", exprDer, { 20.0, 44.0, 9.0 });
     
     //interval estimation of the function
-    auto exprDerInt = Ball<ValDer<Interval<double>>>();
+    auto exprDerInt = Ball<IntervalDer<double>>();
     calcDerivativeInterval("Ball interval gradient", exprDerInt, { {19, 21 }, {43.0, 45.0}, {8.0, 10.0} });
 }
 
