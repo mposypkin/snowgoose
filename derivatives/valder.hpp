@@ -17,6 +17,7 @@
 #include <iostream> 
 #include <cmath>
 #include "grad.hpp"
+#include "interval/enums.h"
 
 
 namespace snowgoose {
@@ -28,13 +29,14 @@ namespace snowgoose {
             {
             }
             
+            
             using value_type = T;
             ValDer operator+(const ValDer &y) const;
             ValDer operator-(const ValDer &y) const;
             ValDer operator*(const ValDer &y) const;
             ValDer operator/(const ValDer &y) const;            
             ValDer operator^(int exp) const;
-
+            ValDer operator^(T exp) const;
             
             template<class T2> friend ValDer<T2> operator+(T2 t, const ValDer<T2> &y);
             template<class T2> friend ValDer<T2> operator-(T2 t, const ValDer<T2> &y);
@@ -56,13 +58,19 @@ namespace snowgoose {
             template<class T2> friend ValDer<T2> atg(const ValDer<T2> &x);
             template<class T2> friend ValDer<T2> actg(const ValDer<T2> &x); 
             template<class T2> friend ValDer<T2> ln(const ValDer<T2> &x);
+            template<class T2> friend ValDer<T2> log(const ValDer<T2> &x, double base);
             template<class T2> friend ValDer<T2> exp(const ValDer<T2> &x);
             template<class T2> friend ValDer<T2> pow(const T2 &base, const ValDer<T2> &exp);
             template<class T2> friend ValDer<T2> abs(const ValDer<T2> &x);
+            template<class T2> friend ValDer<T2> min(const ValDer<T2> &x, const ValDer<T2> &y);
+            template<class T2> friend ValDer<T2> max(const ValDer<T2> &x, const ValDer<T2> &y);
+            template<class T2> friend ValDer<T2> ifThen(IntervalBool condition, const ValDer<T2> &x, const ValDer<T2> &y);
+            template<class T2> friend IntervalBool cond(Conditions condition, const ValDer<T2> &x, const ValDer<T2> &y);
             
             template<class T2> friend std::ostream& operator<<(std::ostream & out, const ValDer<T2> &x);
             T value() const {return m_val;}
-            Grad<T> grad() const {return m_der;}
+            Grad<T> grad() const { return m_der; }
+            explicit operator T(){ return m_val; }
         private:
             T m_val;
             Grad<T> m_der;
@@ -92,7 +100,12 @@ namespace snowgoose {
     
     template<class T> ValDer<T> ValDer<T>::operator^(int exp) const
     {
-        return ValDer(std::pow(m_val, exp), (double)exp * std:: pow(m_val, exp - 1.0) * m_der);
+        return ValDer(std::pow(m_val, exp), (T)exp * std:: pow(m_val, exp - 1.0) * m_der);
+    }
+    
+    template<class T> ValDer<T> ValDer<T>::operator^(T exp) const
+    {
+        return ValDer(std::pow(m_val, exp), (T)exp * std:: pow(m_val, exp - 1.0) * m_der);
     }
     
     template<class T2> ValDer<T2>operator+(T2 t, const ValDer<T2>&y)
@@ -186,7 +199,7 @@ namespace snowgoose {
     
     template<class T2> ValDer<T2> atg(const ValDer<T2>&x)
     {
-        return ValDer<T2>(std::atan(x.m_val), x.m_der/(1.0 + x.m_val*x.m_val ));
+        return ValDer<T2>(std::atan(x.m_val), x.m_der/(1.0 + x.m_val*x.m_val ));            
     }
     
     template<class T2> ValDer<T2> actg(const ValDer<T2>&x)
@@ -196,9 +209,18 @@ namespace snowgoose {
     
     template<class T2> ValDer<T2> ln(const ValDer<T2>&x)
     {
-        if (x.m_val < 0)
-            throw std::invalid_argument("The function ValDer<T>::ln is not define for negative numbers");
+        if (x.m_val <= 0)
+            throw std::invalid_argument("The function ValDer<T>::ln is not define for negative numbers and 0.0");
         return ValDer<T2>(std::log(x.m_val), x.m_der/x.m_val);
+    }
+    
+    template<class T2> ValDer<T2> log(const ValDer<T2> &x, double base)
+    {
+        if (x.m_val <= 0)
+            throw std::invalid_argument("The function ValDer<T>::ln is not define for negative numbers and 0.0");
+
+        auto lgb = std::log(base);
+        return ValDer<T2>(std::log(x.m_val)/lgb, x.m_der/(x.m_val * lgb));
     }
     
     template<class T2> ValDer<T2> exp(const ValDer<T2>&x)
@@ -223,6 +245,43 @@ namespace snowgoose {
             return ValDer<T2>(std::abs(x.m_val), x.m_der);
     }
     
+    template<class T2> ValDer<T2> min(const ValDer<T2> &x, const ValDer<T2> &y)
+    {
+        return (x.m_val < y.m_val) ? x : y;
+    }
+    
+    template<class T2> ValDer<T2> max(const ValDer<T2> &x, const ValDer<T2> &y)
+    {
+        return (x.m_val > y.m_val) ? x : y;
+    }
+            
+    template<class T2> ValDer<T2> ifThen(IntervalBool condition, const ValDer<T2> &x, const ValDer<T2> &y)
+    {
+        return (condition == IntervalBool::True)? x : y;
+    }
+    
+    template<class T2> IntervalBool cond(Conditions condition, const ValDer<T2> &x, const ValDer<T2> &y)
+    {
+        auto left = x.m_val;
+        auto right = y.m_val;
+        switch (condition)
+        {
+            case Conditions::More :
+                return left > right ? IntervalBool::True : IntervalBool::False;
+                break;
+            case Conditions::Less :
+                return left < right ? IntervalBool::True : IntervalBool::False;
+                break;
+            case Conditions::LessEqual :
+                return left <= right ? IntervalBool::True : IntervalBool::False;
+                break;
+            case Conditions::MoreEqual :
+                return left >= right ? IntervalBool::True : IntervalBool::False;
+                break;
+        }
+        throw std::invalid_argument("Invalid condition in ValDer::Condition.");
+    }
+        
     template<class T2> std::ostream& operator<<(std::ostream & out, const ValDer<T2> &x)
     {
         return std::cout << "val: " << x.m_val << " der: " << x.m_der << '\n';

@@ -37,7 +37,8 @@ namespace expression {
 		virtual T Sqrt(const T& t) const = 0;
 		virtual T Sqr(const T& t) const = 0;
 		virtual T Pow(const T& base, int exp) const = 0;
-		virtual T Pow(const T& base, const T& exp) const = 0;
+		virtual T Pow(const T& base, bool isBaseVar, const T& exp, bool isExpVar) const = 0;
+        virtual T PowDouble(const T& base, double exp) const = 0;
 		virtual T Abs(const T& t) const = 0;		
 		virtual T Ln(const T& t) const = 0;
 		virtual T Log(const T& t, double base) const = 0;
@@ -95,26 +96,30 @@ namespace expression {
 		};
 		T Sqr(const T& t) const { return t*t; };
 		T Pow(const T& base, int exp) const { return std::pow(base, exp); };
-		T Pow(const T& base, const T& exp) const
+		T Pow(const T& base, bool isBaseVar, const T& exp, bool isExpVar) const
 		{
 			if(base < 0.0)
 				throw std::invalid_argument("The function FuncAlg::pow is not define for negative base");
 			return std::pow(base, exp);
 		};
+        T PowDouble(const T& base, double exp) const 
+        {
+            return Pow(base, true, T(exp), false); 
+        }
 		T Abs(const T& t) const 
         { 
             return std::abs(t); 
         };
 		T Ln(const T& t) const
 		{
-			if (t < 0)
-				throw std::invalid_argument("The function Ln is not define for negative numbers");
+			if (t <= 0)
+				throw std::invalid_argument("The function Ln is not define for negative numbers and 0.0");
 			return std::log(t);
 		};
 		T Log(const T& t, double base) const
 		{
-			if (t < 0)
-				throw std::invalid_argument("The function Log is not define for negative numbers");
+			if (t <= 0)
+				throw std::invalid_argument("The function Log is not define for negative numbers and 0.0");
 			return std::log(t) / std::log(base);
 		};
 		T Min(const T& left, const T& right) const { return left < right ? left : right; }
@@ -170,7 +175,8 @@ namespace expression {
 		Interval<T> Sqrt(const Interval<T>& t) const { return sqrt(t); };
 		Interval<T> Sqr(const Interval<T>& t) const { return sqr(t); };
 		Interval<T> Pow(const Interval<T>& base, int exp) const { return base ^ exp; };
-		Interval<T> Pow(const Interval<T>& base, const Interval<T>& exp) const { return base ^ exp; };
+		Interval<T> Pow(const Interval<T>& base, bool isBaseVar, const Interval<T>& exp, bool isExpVar) const { return base ^ exp; };
+        Interval<T> PowDouble(const Interval<T>& base, double exp) const { return base ^ Interval<T>(exp);}
 		Interval<T> Abs(const Interval<T>& t) const { return abs(t); };
 		Interval<T> Ln(const Interval<T>& t) const { return ln(t); };
 		Interval<T> Log(const Interval<T>& t, double base) const { return log(t, base); };

@@ -29,6 +29,17 @@ namespace expression {
 		virtual T calc(const Algorithm<T> &) = 0;
 		friend std::ostream& operator<<(std::ostream & out, const Node<T>& v) { return v.prn(out);}
 		virtual std::ostream& prn(std::ostream & out) const = 0;
+        virtual bool IsVar() const {return false;}
+        bool IsVarInTree() const
+        {
+            if(IsVar()) 
+                return true;
+            else
+                for(auto &node : m_childs)
+                    if(node->IsVarInTree())
+                        return true;
+            return false;
+        }
 	protected:
 		vPtrNode<T> m_childs;
 	};	
@@ -42,6 +53,7 @@ namespace expression {
 		Var(int i) : index(i) {}
 		T calc(const Algorithm<T> &alg) { return alg.CreateVar(index); };
 		std::ostream& prn(std::ostream & out) const { return out << "x[" << index << "]"; };
+        bool IsVar() const { return true; }
 	};
 
 
@@ -208,11 +220,11 @@ namespace expression {
 	class Pow : public Node<T>
 	{
 	private:
-		T exponent;
+		double exponent;
 	public:
 		Pow(const ptrNode<T> &node, double exp) : Node<T>({ node }), exponent(exp) {}
 		T calc(const Algorithm<T> & alg) {
-			return alg.Pow(this->m_childs[0]->calc(alg), exponent);
+			return alg.PowDouble(this->m_childs[0]->calc(alg), exponent);
 		};
 		std::ostream& prn(std::ostream & out) const { return out << "pow(" << *this->m_childs[0] << "," << exponent << ")"; }
 	};
@@ -222,7 +234,11 @@ namespace expression {
 	{
 	public:
 		PowExpr(const ptrNode<T> &base, const ptrNode<T> &exp) : Node<T>({ base, exp }) {}
-		T calc(const Algorithm<T> & alg) { return alg.Pow(this->m_childs[0]->calc(alg), this->m_childs[1]->calc(alg)); };
+		T calc(const Algorithm<T> & alg) { 
+            return alg.Pow(this->m_childs[0]->calc(alg), 
+                           this->m_childs[0]->IsVarInTree(),
+                           this->m_childs[1]->calc(alg),
+                           this->m_childs[1]->IsVarInTree()); };
 		std::ostream& prn(std::ostream & out) const { return out << "pow(" << *this->m_childs[0] << "," << *this->m_childs[1] << ")"; }
 	};
 
@@ -350,7 +366,8 @@ namespace expression {
 		IteratorNode(const Iterator &i) : iterator(i) {}
 		T calc(const Algorithm<T> & alg)
 		{
-			return iterator.Current();
+			int index = iterator.Current();
+            return alg.CreateConst(index);
 		}
 		std::ostream& prn(std::ostream & out) const { return out << "i"; }
 	};
@@ -366,6 +383,7 @@ namespace expression {
 			int index = iterator.Current();
 			return alg.CreateVar(index);
 		}
+        bool IsVar() const { return true; }
 		std::ostream& prn(std::ostream & out) const { return out << "x[i]"; };
 	};
 
@@ -379,6 +397,7 @@ namespace expression {
 		{
 			return alg.CreateVar(func());
 		}
+        bool IsVar() const { return true; }
 		std::ostream& prn(std::ostream & out) const { return out << "x[calc i]"; };
 	};
 
@@ -393,6 +412,7 @@ namespace expression {
 			size_t index = (size_t)((double)expr.calc(alg));
 			return alg.CreateVar(index);
 		}
+        bool IsVar() const { return true; }
 		std::ostream& prn(std::ostream & out) const { return out << "x[" << expr << "]"; };
 	};
 
@@ -404,7 +424,7 @@ namespace expression {
 	public:
 		CycleSum(const ptrNode<T> &node, const Iterator &i) : Node<T>({ node }), iterator(i) {}
 		T calc(const Algorithm<T> & alg) {
-			T result = T();
+            T result = alg.CreateConst(0.0);
 			iterator.Reset();
 			while (iterator.CanIterate())
 			{
@@ -423,11 +443,11 @@ namespace expression {
 		Iterator iterator;
 	public:
 		CycleMul(const ptrNode<T> &node, const Iterator &i) : Node<T>({ node }), iterator(i) {}
-		T calc(const Algorithm<T> & alg) {
-			T result = 1.0;
+		T calc(const Algorithm<T> & alg) {		
+			T result = alg.CreateConst(1.0);;
 			iterator.Reset();
 			if (!iterator.CanIterate())
-				return T();
+				return alg.CreateConst(0.0);
 			while (iterator.CanIterate())
 			{
 				result = alg.Mul(result, this->m_childs[0]->calc(alg));
