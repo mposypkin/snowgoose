@@ -74,6 +74,8 @@ namespace snowgoose {
             b.mDim = 0;
             b.mA = nullptr;
             b.mB = nullptr;
+
+	    return *this;
         }
 
         /**
