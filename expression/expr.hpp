@@ -315,6 +315,7 @@ namespace expression {
 		*/
 		template <class T2> friend std::ostream& operator<<(std::ostream & out, const Expr<T2>& v);
 		friend class Iterator;
+		template <class T3> friend class ExprIndex;
 	private:
 		/**
 		* It is root of tree of the expression
@@ -543,7 +544,8 @@ namespace expression {
 
 	template <class T> T Expr<T>::calc(const Algorithm<T> & alg) const
 	{
-		return node->calc(alg);
+		MapIterator map_iterator;
+		return node->calc(alg, map_iterator);
 	}
 
 	template <class T> std::ostream& operator<<(std::ostream & out, const Expr<T>& v)

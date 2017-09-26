@@ -1,11 +1,15 @@
 #ifndef __BOX_HPP__
 #define __BOX_HPP__
 
+
 #include <cstring>
 #include <utility>
+
 /**
  * Class for handling boxes
  */
+
+#include <string.h>
 
 namespace snowgoose {
 
@@ -70,6 +74,8 @@ namespace snowgoose {
             b.mDim = 0;
             b.mA = nullptr;
             b.mB = nullptr;
+
+	    return *this;
         }
 
         /**
@@ -100,7 +106,6 @@ namespace snowgoose {
          */
         FT* mB;
     };
-
 
 }
 

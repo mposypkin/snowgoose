@@ -17,6 +17,7 @@
 #include <cmath>
 #include "interval/interval_air.hpp"
 
+
 using namespace snowgoose::interval;
 
 namespace snowgoose {
@@ -62,6 +63,26 @@ namespace snowgoose {
         return interval::asin(t);
     }
     
+    template<class T> T atg_(const T &t)
+    {
+        return std::atan(t);
+    }
+
+    template<class T> Interval<T> atg_(const Interval<T> &t)
+    {
+        return interval::atg(t);
+    }
+    
+    template<class T> T actg_(const T &t)
+    {
+        return M_PI_2 - std::atan(t);
+    }
+
+    template<class T> Interval<T> actg_(const Interval<T> &t)
+    {
+        return interval::actg(t);
+    }
+    
     template<class T> T tg_(const T &t)
     {
         return std::tan(t);
@@ -70,6 +91,16 @@ namespace snowgoose {
     template<class T> Interval<T> tg_(const Interval<T> &t)
     {
         return interval::tg(t);
+    }
+    
+    template<class T> T ctg_(const T &t)
+    {
+        return 1.0 / std::tan(t);
+    }
+
+    template<class T> Interval<T> ctg_(const Interval<T> &t)
+    {
+        return interval::ctg(t);
     }
     
     template<class T> T sqrt_(const T &t)
@@ -88,11 +119,6 @@ namespace snowgoose {
     }
     
     template<class T> Interval<T> pow_(const Interval<T> &t, int exp)
-    {
-        return t ^ exp;
-    }
-
-    template<class T> Interval<T> sqrt_(const Interval<T> &t, int exp)
     {
         return t ^ exp;
     }
@@ -115,6 +141,26 @@ namespace snowgoose {
     template<class T> Interval<T> exp_(const Interval<T> &t)
     {
         return interval::exp(t);
+    }
+    
+    template<class T> T pow_(const T &base, const T &exp)
+    {
+        return std::pow(base, exp);
+    }
+
+    template<class T> Interval<T> pow_(const T &base, const Interval<T> &exp)
+    {
+        return Interval<T>(base) ^ exp;
+    }
+    
+    template<class T> T abs_(const T &t)
+    {
+        return std::abs(t);
+    }
+
+    template<class T> Interval<T> abs_(const Interval<T> &t)
+    {
+        return interval::abs(t);
     }
     
   }
