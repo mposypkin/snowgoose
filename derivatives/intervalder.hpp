@@ -42,7 +42,7 @@ namespace snowgoose {
             IntervalDer operator*(const IntervalDer &y) const;
             IntervalDer operator/(const IntervalDer &y) const;           
             IntervalDer operator^(int exp) const;
-            IntervalDer operator^(double exp) const;
+            IntervalDer operator^(const Interval<T> &exp) const;
             
             template<class T2, class T3> friend IntervalDer<T2> operator+(T3 t, const IntervalDer<T2> &y);
             template<class T2, class T3> friend IntervalDer<T2> operator-(T3 t, const IntervalDer<T2> &y);
@@ -107,9 +107,9 @@ namespace snowgoose {
         return IntervalDer(m_val^ exp, (double)exp * (m_val ^ (exp - 1.0)) * m_der);
     }
     
-    template<class T> IntervalDer<T> IntervalDer<T>::operator^(double exp) const
+    template<class T> IntervalDer<T> IntervalDer<T>::operator^(const Interval<T>  &exp) const
     {
-        return IntervalDer(m_val^ exp, (double)exp * (m_val ^ (exp - 1.0)) * m_der);
+        return IntervalDer(m_val^ exp, exp * (m_val ^ (exp - 1.0)) * m_der);
     }
     
     template<class T2, class T3> IntervalDer<T2>operator+(T3 t, const IntervalDer<T2> &y)

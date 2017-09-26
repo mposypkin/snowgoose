@@ -89,7 +89,7 @@ Expr<T> Brown(int n)
 {
 	Expr<T> x;
 	Iterator i(0, n - 2);
-	auto t = [=] { return i.Current() + 1; };
+	Expr<T> t = (Expr<T>)i + 1;
 	return loopSum(pow(sqr(x[i]), sqr(x[t]) + 1) + pow(sqr(x[t]), sqr(x[i]) + 1), i);
 }
 
@@ -269,6 +269,7 @@ int main_(int argc, char** argv) {
 	auto hartman6 = Hartman6<double>();
 	calcFunc("Hartman6", hartman6, {0.201690, 0.150011, 0.476874, 0.275332, 0.311652, 0.657301});
 
+
 	//auto schewefel = Schewefel<Interval<double>>(2, 2);
 	//calcInterval("Schewefel", schewefel, { { 2.0, 3.0 },{ 2.0, 3.0 } });
 
@@ -277,7 +278,7 @@ int main_(int argc, char** argv) {
 
 	auto last = Ackley4<double>();
 	calcFunc("Last", last, { 1.479252, -0.739807});
-	std::cout << last << '\n';
+	//std::cout << last << '\n';
 
 
     return 0;
