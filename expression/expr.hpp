@@ -7,6 +7,11 @@
 #include <math.h>
 #include "node.hpp"
 #include "algorithm.hpp"
+#include "algder.hpp"
+#include "derivatives/valder.hpp"
+#include "derivatives/intervalder.hpp"
+
+using namespace snowgoose::derivative;
 
 namespace snowgoose {
 namespace expression {
@@ -546,6 +551,26 @@ namespace expression {
 	{
 		MapIterator map_iterator;
 		return node->calc(alg, map_iterator);
+	}
+
+	template <class T> T calcFunc(const Expr<T>& exp, const std::vector<T>& point)
+	{
+		return exp.calc(FuncAlg<T>(point));
+	}
+
+        template <class T> Interval<T> calcInterval(const Expr<Interval<T>>& exp, const std::vector<Interval<T>>& box)
+        {
+		return exp.calc(InterEvalAlg<T>(box));
+        }
+
+	template <class T> ValDer<T> calcGrad(const Expr<ValDer<T>>& exp, const std::vector<T>& point)
+	{
+		return exp.calc(ValDerAlg<T>(point));
+	}
+
+	template <class T> IntervalDer<T> calcIntervalGrad(const Expr<IntervalDer<T>>& exp, const std::vector<Interval<T>>& box)
+	{
+		return exp.calc(IntervalDerAlg<T>(box));
 	}
 
 	template <class T> std::ostream& operator<<(std::ostream & out, const Expr<T>& v)

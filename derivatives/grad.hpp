@@ -43,6 +43,7 @@ namespace snowgoose {
                             return false;
                     return true;
                 }
+		const T* getGrad() const { return m_grad.data(); };
             private:
                 std::vector<T> m_grad;   
         };
