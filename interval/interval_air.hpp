@@ -557,7 +557,7 @@ namespace snowgoose {
 			else if (ib == IntervalBool::False)
 				return y;
 			else
-				return Interval<T>(SGMIN(x.m_lb, y.m_lb), SGMAX(y.m_rb, y.m_rb));
+				return Interval<T>(SGMIN(x.m_lb, y.m_lb), SGMAX(x.m_rb, y.m_rb));
 		}
 		template<class T> std::ostream& operator<<(std::ostream & out, const Interval<T> x)
 		{

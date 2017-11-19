@@ -61,7 +61,8 @@ namespace expression {
 		Var(int i) : index(i) {}
 		T calc(const Algorithm<T> &alg, MapIterator &map_iterator) const { return alg.CreateVar(index); };
 		std::ostream& prn(std::ostream & out) const { return out << "x[" << index << "]"; };
-        bool IsVar() const { return true; }
+        	bool IsVar() const { return true; }
+		int getIndex() { return index; }
 	};
 
 
@@ -74,6 +75,7 @@ namespace expression {
 		Const(double value) : m_const(value) {}
 		T calc(const Algorithm<T> &alg, MapIterator &map_iterator) const { return alg.CreateConst(m_const); }
 		std::ostream& prn(std::ostream & out) const { return out << m_const; }
+		double getConst() { return m_const; }
 	};
 
 	template <class T>
@@ -297,6 +299,8 @@ namespace expression {
 		std::ostream& prn(std::ostream & out) const { return out << "max(" << *this->m_childs[0] << "," << *this->m_childs[1] << ")"; }
 	};
 
+	template <class T> class IfTrue;
+
 	template <class T>
 	class ConditionNode : public Node<T>
 	{
@@ -313,6 +317,8 @@ namespace expression {
 			return alg.Condition(condition, this->m_childs[0]->calc(alg, map_iterator), this->m_childs[1]->calc(alg, map_iterator));
 		}
 		std::ostream& prn(std::ostream & out) const { return out << " " << *this->m_childs[0] << condition << *this->m_childs[1] << " "; }
+		Conditions getCondition() { return condition; }
+		friend class IfTrue<T>;
 	};
 
 	template <class T>
@@ -325,7 +331,20 @@ namespace expression {
 
 		T calc(const Algorithm<T> & alg, MapIterator &map_iterator) const
 		{
-			return alg.IfTrue(conditionNode->calcCondition(alg, map_iterator), this->m_childs[0]->calc(alg, map_iterator), this->m_childs[1]->calc(alg, map_iterator));
+			IntervalBool condition = conditionNode->calcCondition(alg, map_iterator);
+			auto pVar = std::dynamic_pointer_cast<Var<T>>(conditionNode->m_childs[0]);
+			auto pCnst = std::dynamic_pointer_cast<Const<T>>(conditionNode->m_childs[1]);
+			if(condition == IntervalBool::Intermadiate && pVar && pCnst)
+			{
+				Conditions cond = conditionNode->getCondition();
+				int index = pVar->getIndex();
+				double cnst = pCnst->getConst();
+				auto vPtrAlg = alg.GetNewAlgorithm(cond, index, cnst);
+				return alg.IfTrue(condition, this->m_childs[0]->calc(*vPtrAlg[0], map_iterator), this->m_childs[1]->calc(*vPtrAlg[1], map_iterator));
+			}
+			else
+				return alg.IfTrue(condition, this->m_childs[0]->calc(alg, map_iterator), this->m_childs[1]->calc(alg, map_iterator));
+			
 		}
 		std::ostream& prn(std::ostream & out) const { return out << "ifThen(" << *conditionNode << " , " << *this->m_childs[0] << " , " << *this->m_childs[1] << ")"; }
 	};

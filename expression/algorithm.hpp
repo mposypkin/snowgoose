@@ -14,6 +14,10 @@ using namespace snowgoose::interval;
 
 namespace snowgoose {
 namespace expression {
+
+	template<class T> class Algorithm;
+	template<typename T> using ptrAlg = std::shared_ptr<Algorithm<T>>;
+	template<typename T> using vPtrAlg = std::vector<ptrAlg<T>>;
 	/**
 	* Base class for algorithms
 	*/
@@ -38,7 +42,7 @@ namespace expression {
 		virtual T Sqr(const T& t) const = 0;
 		virtual T Pow(const T& base, int exp) const = 0;
 		virtual T Pow(const T& base, bool isBaseVar, const T& exp, bool isExpVar) const = 0;
-        virtual T PowDouble(const T& base, double exp) const = 0;
+        	virtual T PowDouble(const T& base, double exp) const = 0;
 		virtual T Abs(const T& t) const = 0;		
 		virtual T Ln(const T& t) const = 0;
 		virtual T Log(const T& t, double base) const = 0;
@@ -46,8 +50,9 @@ namespace expression {
 		virtual T Max(const T& left, const T& right) const = 0;
 		virtual T IfTrue(IntervalBool ib, const T& left, const T& right) const = 0;
 		virtual IntervalBool Condition(Conditions condition, const T& left, const T& right) const = 0;
-        virtual T CreateVar(int index) const = 0;
-        virtual T CreateConst(double cnst) const = 0;
+		virtual T CreateVar(int index) const = 0;
+		virtual T CreateConst(double cnst) const = 0;
+		virtual vPtrAlg<T> GetNewAlgorithm(Conditions condition, int index, double cnst) const { return vPtrAlg<T>(); }//empty vector
 	};
 	/**
 	* Algorithm to calculate value of a function
@@ -102,14 +107,14 @@ namespace expression {
 				throw std::invalid_argument("The function FuncAlg::pow is not define for negative base");
 			return std::pow(base, exp);
 		};
-        T PowDouble(const T& base, double exp) const 
-        {
-            return Pow(base, true, T(exp), false); 
-        }
-		T Abs(const T& t) const 
-        { 
-            return std::abs(t); 
-        };
+		T PowDouble(const T& base, double exp) const 
+		{
+		    return Pow(base, true, T(exp), false); 
+		}
+			T Abs(const T& t) const 
+		{ 
+		    return std::abs(t); 
+		};
 		T Ln(const T& t) const
 		{
 			if (t <= 0)
@@ -144,8 +149,8 @@ namespace expression {
 			}
 			throw std::invalid_argument("Invalid condition.");
 		}
-        T CreateVar(int index) const { return m_v[index]; }      
-        T CreateConst(double cnst) const { return cnst; };
+		T CreateVar(int index) const { return m_v[index]; }      
+		T CreateConst(double cnst) const { return cnst; };
 	};
 
 
@@ -176,7 +181,7 @@ namespace expression {
 		Interval<T> Sqr(const Interval<T>& t) const { return sqr(t); };
 		Interval<T> Pow(const Interval<T>& base, int exp) const { return base ^ exp; };
 		Interval<T> Pow(const Interval<T>& base, bool isBaseVar, const Interval<T>& exp, bool isExpVar) const { return base ^ exp; };
-        Interval<T> PowDouble(const Interval<T>& base, double exp) const { return base ^ Interval<T>(exp);}
+        	Interval<T> PowDouble(const Interval<T>& base, double exp) const { return base ^ Interval<T>(exp);}
 		Interval<T> Abs(const Interval<T>& t) const { return abs(t); };
 		Interval<T> Ln(const Interval<T>& t) const { return ln(t); };
 		Interval<T> Log(const Interval<T>& t, double base) const { return log(t, base); };
@@ -202,9 +207,22 @@ namespace expression {
 			}
 			throw std::invalid_argument("Invalid condition.");
 		}
-        Interval<T>  CreateVar(int index) const { return m_v[index]; }      
-        Interval<T>  CreateConst(double cnst) const { return cnst; };
-
+		Interval<T> CreateVar(int index) const { return m_v[index]; }      
+		Interval<T> CreateConst(double cnst) const { return cnst; };
+		vPtrAlg<Interval<T>> GetNewAlgorithm(Conditions cond, int index, double cnst) const
+		{ 
+			std::vector<Interval<T>> leftVec(m_v);
+			std::vector<Interval<T>> rightVec(m_v);
+			if(cond == Conditions::More || cond == Conditions::MoreEqual) {	
+				leftVec[index] = Interval<T>(cnst, m_v[index].rb());				
+				rightVec[index] = Interval<T>(m_v[index].lb(), cnst);
+			}
+			else { // Less or LessEqual
+				leftVec[index] = Interval<T>(m_v[index].lb(), cnst);				
+				rightVec[index] = Interval<T>(cnst, m_v[index].rb());
+			}
+			return vPtrAlg<Interval<T>>({ ptrAlg<Interval<T>>(new InterEvalAlg<T>(leftVec)), ptrAlg<Interval<T>>(new InterEvalAlg<T>(rightVec))});
+		}
             
 	};
 }
