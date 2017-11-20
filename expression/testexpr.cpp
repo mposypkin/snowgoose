@@ -167,11 +167,19 @@ Expr<T> Factorial(int n)
 template <class T>
 Expr<T> Ball()
 {
-	Expr<T> x;
+    Expr<T> x;
     Expr<T> rad = (M_PI/180) * x[0];
     Expr<T> t = sqr(x[1]*cos(rad));
     Expr<T> f=(t/32.0)*(tg(rad)+sqrt(sqr(tg(rad)) + 64.0*x[2]/t));
     return f;
+}
+
+template <class T>
+Expr<T> TestIfThen()
+{
+    Expr<T> x;
+    Expr<T> y = ifThen(x[0] > 2.0, sqr(x[0]), x[0] + x[0]);
+    return y;
 }
 
 
@@ -217,6 +225,10 @@ int main(int argc, char** argv) {
     //interval estimation of the function
     auto exprDerInt = Ball<IntervalDer<double>>();
     calcDerivativeInterval("Ball interval gradient", exprDerInt, { {19, 21 }, {43.0, 45.0}, {8.0, 10.0} });
+
+    //test ifThen
+    auto exprIfThen = TestIfThen<Interval<double>>();
+    calcInterval("Test IfThen", exprIfThen, { {1.0, 3.0 } }); 	
 }
 
 int main_(int argc, char** argv) {
