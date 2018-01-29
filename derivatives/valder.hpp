@@ -28,8 +28,7 @@ namespace snowgoose {
             ValDer(T val, const Grad<T> &der) : m_val(val), m_der(der)
             {
             }
-            
-            
+            ValDer(){}
             using value_type = T;
             ValDer operator+(const ValDer &y) const;
             ValDer operator-(const ValDer &y) const;
