@@ -3,5 +3,6 @@ all dep clean indent tests::
 	cd common && make $@ && cd .. 
 	cd interval && make $@ && cd .. 
 	cd derivatives && make $@ && cd ..
+	cd derhighorder && make $@ && cd ..
 	cd expression && make $@ && cd .. 
 	cd pointgen && make $@ && cd ..

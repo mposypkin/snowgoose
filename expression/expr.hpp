@@ -8,10 +8,14 @@
 #include "node.hpp"
 #include "algorithm.hpp"
 #include "algder.hpp"
+#include "algderhighord.hpp"
 #include "derivatives/valder.hpp"
 #include "derivatives/intervalder.hpp"
+#include "derivatives/valder.hpp"
+#include "derhighorder/series.hpp"
 
 using namespace snowgoose::derivative;
+using namespace snowgoose::derhighorder;
 
 namespace snowgoose {
 namespace expression {
@@ -573,10 +577,18 @@ namespace expression {
 		return exp.calc(IntervalDerAlg<T>(box));
 	}
 
+	template <class T> Series<T> calcDerHighOrder(const Expr<Series<T>>& exp, T point, int order)
+	{
+		return exp.calc(SeriesAlg<T>(point, order));
+	}
+
 	template <class T> std::ostream& operator<<(std::ostream & out, const Expr<T>& v)
 	{
 		return out << *v.node;
 	}
+
+
+
 }
 }
 

@@ -13,6 +13,7 @@
 #include <iostream>
 #include "expr.hpp"
 #include "algder.hpp"
+#include "algderhighord.hpp"
 #include "interval/interval_air.hpp"
 #include <math.h>
 
@@ -182,6 +183,50 @@ Expr<T> TestIfThen()
     return y;
 }
 
+template <class T>
+Expr<T> Holder1()
+{
+	Expr<T> x;
+	Expr<T> y = (x[0]^6) - 15 * (x[0]^4) + 27 * sqr(x[0]) + 250;
+	return y;
+}
+
+template <class T>
+Expr<T> Holder2()
+{
+	Expr<T> x;
+	Expr<T> y = (sqr(x[0]) - 5 * x[0] + 6) * (sqr(x[0]) + 1);
+	return y;
+}
+
+template <class T>
+Expr<T> Holder3()
+{
+	Expr<T> x;
+	Expr<T> a = sqr(x[0] - 2);
+	Expr<T> b = 2 * ln(x[0] - 2) + 1;
+	Expr<T> y = ifThen(x[0] <= 3, a, b);
+	return y;
+}
+
+template <class T>
+Expr<T> Holder4()
+{
+	Expr<T> x;
+	Expr<T> a = -sqrt(2 * x[0] - sqr(x[0]));
+	Expr<T> b = -sqrt(-sqr(x[0]) + 8 * x[0] - 12);
+	Expr<T> y = ifThen(x[0] <=2, a, b);
+	return y;
+}
+
+template <class T>
+Expr<T> Holder5()
+{
+	Expr<T> x;
+	Expr<T> y = (3 * x[0] - 1.4) * sin(18 * x[0]);
+	return y;
+}
+
 
 void calcFunc(const std::string& name, Expr<double> expr, const std::vector<double>& vars)
 {
@@ -207,6 +252,12 @@ void calcDerivativeInterval(const std::string& name, Expr<IntervalDer<double>> e
 	std::cout << name << ": " << result;
 }
 
+void calcDerHighOrder(const std::string& name, Expr<Series<double>> expr, double var, int order)
+{
+	Series<double> result = expr.calc(SeriesAlg<double>(var, order));	
+	std::cout << name << ": " << result << '\n';
+}
+
 int main(int argc, char** argv) {
    
     //function value
@@ -228,7 +279,19 @@ int main(int argc, char** argv) {
 
     //test ifThen
     auto exprIfThen = TestIfThen<Interval<double>>();
-    calcInterval("Test IfThen", exprIfThen, { {1.0, 3.0 } }); 	
+    calcInterval("Test IfThen", exprIfThen, { {1.0, 3.0 } }); 
+
+    //derivative 3 order of the function
+    auto exprDerHighOrd = Holder1<Series<double>>();
+    calcDerHighOrder("Holder 1", exprDerHighOrd, 1.0, 3);	
+
+    //derivative 3 order of the function
+    auto exprDerHighOrd2 = Holder4<Series<double>>();
+    calcDerHighOrder("Holder 4", exprDerHighOrd2, 1.0, 3);
+
+    //derivative 3 order of the function
+    auto exprDerHighOrd3 = Holder5<Series<double>>();
+    calcDerHighOrder("Holder 5", exprDerHighOrd3, 0.0, 3);
 }
 
 int main_(int argc, char** argv) {
