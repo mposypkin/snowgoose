@@ -16,6 +16,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 namespace snowgoose {
 
@@ -33,6 +34,14 @@ namespace snowgoose {
  */
 #define SG_ASSERT(p){\
   if((p) == 0){\
+    fprintf(stderr, "ASSERTION FALIED at %s:%d\n", __FILE__, __LINE__);\
+    fflush(stderr);\
+    exit(-1);\
+  }\
+}
+
+#define SG_ASSERT_NEAR(v1,v2,eps){\
+  if(std::abs(v1-v2) > eps){\
     fprintf(stderr, "ASSERTION FALIED at %s:%d\n", __FILE__, __LINE__);\
     fflush(stderr);\
     exit(-1);\

@@ -34,6 +34,7 @@ namespace snowgoose {
             IntervalDer(T val, const Grad<Interval<T>> &der) : m_val(val), m_der(der)
             {
             }
+            IntervalDer() {}
             
             using value_type = Interval<T>;
 

@@ -342,6 +342,10 @@ namespace expression {
 				auto vPtrAlg = alg.GetNewAlgorithm(cond, index, cnst);
 				return alg.IfTrue(condition, this->m_childs[0]->calc(*vPtrAlg[0], map_iterator), this->m_childs[1]->calc(*vPtrAlg[1], map_iterator));
 			}
+			else if (condition == IntervalBool::True)
+				return alg.IfTrue(condition, this->m_childs[0]->calc(alg, map_iterator), T());
+			else if (condition == IntervalBool::False)
+				return alg.IfTrue(condition, T(), this->m_childs[1]->calc(alg, map_iterator));
 			else
 				return alg.IfTrue(condition, this->m_childs[0]->calc(alg, map_iterator), this->m_childs[1]->calc(alg, map_iterator));
 			

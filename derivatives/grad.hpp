@@ -26,9 +26,10 @@ namespace snowgoose {
         template <class  T> class Grad
         {
             public:
-                Grad(const std::initializer_list<T> &lst);
+                Grad(const std::initializer_list<T> &lst);		
                 Grad(const std::vector<T> &grad) : m_grad(grad) {}
                 Grad(std::size_t size, const T &t) : m_grad(size, t) {}
+		Grad(){}
                 T operator[](std::size_t i) const;
                 Grad operator+(const Grad &y) const;
                 Grad operator-(const Grad &y) const;
