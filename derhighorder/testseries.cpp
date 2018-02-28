@@ -13,6 +13,7 @@
 #include <iostream>
 #include <math.h>
 #include "series.hpp"
+#include "intervalseries.hpp"
 #include "interval/interval_air.hpp"
 #include "common/sgerrcheck.hpp"
 
@@ -27,9 +28,18 @@ void Test1()
 {
     Series<double> x(1.0, 1.0, 3);
     Series<double> z = x * x;
-    SG_ASSERT(z.der(2)==2);
-    SG_ASSERT(z.der(3)==0);
+    SG_ASSERT(z.der(2) == 2.0);
+    SG_ASSERT(z.der(3) == 0.0);
     std::cout << "Test1: " <<  z;
+}
+
+void IntervalTest1()
+{
+    IntervalSeries<double> x({0.9, 1.1}, 1.0, 3);
+    IntervalSeries<double> z = x * x;
+    SG_ASSERT(z.der(2).lb() <= 2.0 && z.der(2).rb() >= 2.0);
+    SG_ASSERT(z.der(3).lb() <= 0.0 && z.der(3).rb() >= 0.0);
+    std::cout << "IntervalTest1: " <<  z;
 }
 
 
@@ -39,17 +49,35 @@ void Test2()
     Series<double> z = x ^ 2;
     SG_ASSERT(z.der(2)==2);
     SG_ASSERT(z.der(3)==0);
-    std::cout << "Test3: " <<  z;
+    std::cout << "Test2: " <<  z;
+}
+
+void IntervalTest2()
+{
+    IntervalSeries<double> x({0.9, 1.1}, 1.0, 3);
+    IntervalSeries<double> z = x ^ 2;
+    SG_ASSERT(z.der(2).lb() <= 2.0 && z.der(2).rb() >= 2.0);
+    SG_ASSERT(z.der(3).lb() <= 0.0 && z.der(3).rb() >= 0.0);
+    std::cout << "IntervalTest2: " <<  z;
 }
 
 
 void Test3()
 {
-    Series<double> x(1.0, 1.0, 3);
+    Series<double> x(1.1, 1.0, 3);
     Series<double> z = (x^2) + (x^3);
-    SG_ASSERT(z.der(2)==8);
-    SG_ASSERT(z.der(3)==6);
-    std::cout << "Test4: " <<  z;
+    //SG_ASSERT(z.der(2)==8);
+    //SG_ASSERT(z.der(3)==6);
+    std::cout << "Test3: " <<  z;
+}
+
+void IntervalTest3()
+{
+    IntervalSeries<double> x({0.9, 1.1}, 1.0, 3);
+    IntervalSeries<double> z = (x^2) + (x^3);
+    SG_ASSERT(z.der(2).lb() <= 8.0 && z.der(2).rb() >= 8.0);
+    SG_ASSERT(z.der(3).lb() <= 6.0 && z.der(3).rb() >= 6.0);
+    std::cout << "IntervalTest3: " <<  z;
 }
 
 void Test4()
@@ -71,6 +99,17 @@ void Test5()
     std::cout << "Test5: " <<  z;
 }
 
+void IntervalTest5()
+{
+    IntervalSeries<double> x({0.9, 1.1}, 1.0, 3);
+    IntervalSeries<double> z = 3.0 * (x^2);
+
+    SG_ASSERT(z.value() <= 3.0 && z.value() >= 3.0);
+    SG_ASSERT(z.der(2).lb() <= 6.0 && z.der(2).rb() >= 6.0);
+    SG_ASSERT(z.der(3).lb() <= 0.0 && z.der(3).rb() >= 0.0);
+    std::cout << "IntervalTest5: " <<  z;
+}
+
 void Test6()
 {
     Series<double> x(1.0, 1.0, 3);
@@ -80,6 +119,18 @@ void Test6()
     SG_ASSERT(z.der(2)==0);
     SG_ASSERT(z.der(3)==0);
     std::cout << "Test6: " <<  z;
+}
+
+void IntervalTest6()
+{
+    IntervalSeries<double> x({0.9, 1.1}, 1.0, 3);
+    IntervalSeries<double> z = (x^3)/(x^2);
+
+    SG_ASSERT(z.value() <= 1.0 && z.value() >= 1.0);
+    SG_ASSERT(z.der(1).lb() <= 1.0 && z.der(1).rb() >= 1.0);
+    SG_ASSERT(z.der(2).lb() <= 0.0 && z.der(2).rb() >= 0.0);
+    SG_ASSERT(z.der(3).lb() <= 0.0 && z.der(3).rb() >= 0.0);
+    std::cout << "IntervalTest6: " <<  z;
 }
 
 void Test7()
@@ -340,6 +391,43 @@ void Test28()
 
 
 
+void IntervalTest14()
+{
+    IntervalSeries<double> x({M_PI/2.0 - 0.1,  M_PI/2.0 + 0.1}, 1.0, 3);
+    IntervalSeries<double> z = sin(x^2);
+    std::cout << "IntervalTest14: " <<  z;
+}
+
+void IntervalTest15()
+{
+    Interval<double> x(M_PI/2.0 - 0.1,  M_PI/2.0 + 0.1);
+    Interval<double> z = -4.0*sin(x^2)*(x^2) + 2.0*cos(x^2);
+    std::cout << "IntervalTest15: " <<  z;
+}
+
+void IntervalTest16()
+{
+    Series<double> x(M_PI/2.0 - 0.1, 1.0, 3);
+    Series<double> z = sin(x^2);
+    std::cout << "IntervalTest16: " <<  z;
+}
+
+void IntervalTest17()
+{
+    Series<double> x(M_PI/2.0 + 0.1, 1.0, 3);
+    Series<double> z = sin(x^2);
+    std::cout << "IntervalTest17: " <<  z;
+}
+
+void IntervalTest18()
+{
+    Series<double> x(M_PI/2.0, 1.0, 3);
+    Series<double> z = sin(x^2);
+    std::cout << "IntervalTest18: " <<  z;
+}
+
+
+
 int main(int argc, char** argv) {
 
     Test1(); 
@@ -370,6 +458,18 @@ int main(int argc, char** argv) {
     Test26();
     Test27();
     Test28();
+
+    IntervalTest1();
+    IntervalTest2();
+    IntervalTest3();
+    IntervalTest5();
+    IntervalTest6();
+    IntervalTest14();
+    IntervalTest15();
+    IntervalTest16();
+    IntervalTest17();
+    IntervalTest18();
+
     return 0;
 }
  
