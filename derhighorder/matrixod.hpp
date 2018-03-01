@@ -92,7 +92,7 @@ namespace snowgoose {
             T t = 0.0;
             for(int i=0; i < sz; i++)
             { 
-                t += m_matrix[i] * y.m_matrix[i];
+                t = t + m_matrix[i] * y.m_matrix[i];
             }
             return t;		
 	}
@@ -140,7 +140,7 @@ namespace snowgoose {
         {
             std::vector<T> matrix;
             for(int i = 0; i < last; i++)
-		matrix.push_back(first + i);
+		matrix.push_back(double(first + i));
 	    return MatrixOneDim<T>(matrix);
         }
 
