@@ -335,7 +335,7 @@ namespace snowgoose {
         h[0] = interval::asin(u.item(0));
 	v[0] = interval::sqrt(1.0 - u.item(0)*u.item(0));
         h[1] = u.item(1)/v.item(0);
-        v[1] = -h.item(1) * u.item(0);
+        v[1] = -1.0*h.item(1) * u.item(0);
 
 	for(int i=2; i < u.size(); i++)
 	{	   
@@ -358,7 +358,7 @@ namespace snowgoose {
 
         h[0] = interval::acos(u.item(0));
 	v[0] = interval::sqrt(1.0 - u.item(0)*u.item(0));
-        h[1] = -u.item(1)/v.item(0);
+        h[1] = -1.0 *u.item(1)/v.item(0);
         v[1] = h.item(1)*u.item(0);
 
 	for(int i=2; i < u.size(); i++)
@@ -406,7 +406,7 @@ namespace snowgoose {
 	v[0] = 1.0 + u.item(0)*u.item(0); 
         h[0] = M_PI_2 - interval::atg(u.item(0));
 	v[1] = 2.0 * u.item(1)*u.item(0);      
-        h[1] = -u.item(1)/v.item(0);
+        h[1] = -1.0*u.item(1)/v.item(0);
         	
 
 	for(int i=2; i < u.size(); i++)
