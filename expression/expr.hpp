@@ -582,6 +582,11 @@ namespace expression {
 		return exp.calc(SeriesAlg<T>(point, order));
 	}
 
+	template <class T> IntervalSeries<T> calcIntervalDerHighOrder(const Expr<IntervalSeries<T>>& exp, const Interval<T>& interval, int order)
+	{
+		return exp.calc(IntervalSeriesAlg<T>(interval, order));
+	}
+
 	template <class T> std::ostream& operator<<(std::ostream & out, const Expr<T>& v)
 	{
 		return out << *v.node;
