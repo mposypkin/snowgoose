@@ -70,7 +70,7 @@ namespace snowgoose {
             template<class T2> friend IntervalSeries<T2> max(const IntervalSeries<T2> &x, const IntervalSeries<T2> &y);
             template<class T2> friend IntervalSeries<T2> ifThen(IntervalBool condition, const IntervalSeries<T2> &x, const IntervalSeries<T2> &y);
             template<class T2> friend IntervalBool cond(Conditions condition, const IntervalSeries<T2> &x, const IntervalSeries<T2> &y);
-            
+            template<class T2> friend IntervalSeries<T2> unite(const IntervalSeries<T2> &x, const IntervalSeries<T2> &y);
             template<class T2> friend std::ostream& operator<<(std::ostream & out, const IntervalSeries<T2> &x);
             Interval<T> value() const { return m_coef.item(0); }
             Interval<T> der(int order) const { return m_coef.item(order) * (double)fact(order); }
@@ -121,24 +121,17 @@ namespace snowgoose {
         return IntervalSeries(h);
     }
     
-    // h(x) = u(x)^r
-    // h'(x) u(x) = r u'(x) h(x)
-    // z(x) = h'(x) u(x) = r u'(x) h(x)
     template<class T> IntervalSeries<T> IntervalSeries<T>::operator^(int exp) const
     {
-        
-        const MatrixOneDim<Interval<T>>& u = m_coef;
-	MatrixOneDim<Interval<T>>  h(u.size(), 0.0);
-	MatrixOneDim<Interval<T>>  z(u.size(), 0.0);
 
-        h[0] = u.item(0) ^ exp;
-	z[0] = (double)exp * u.item(1) * h.item(0);
-
-	for(int i=1; i < u.size(); i++)
+	const MatrixOneDim<Interval<T>>& l = m_coef;
+	MatrixOneDim<Interval<T>>  h = l;
+	for(int j=1; j < exp; j++)	
 	{
-	   z[i] =  ((double)exp/i) * ( MatrixOneDim<Interval<T>>::seq(1, i).mulItems(u.subMatrix(1, i)) * h.subMatrix(0, i-1).reverse() ) ;        
-	   h[i] =  i==1 ? z.item(i)/u.item(0) : z.item(i)/u.item(0) - 1.0/((double)i*u.item(0)) * ( MatrixOneDim<Interval<T>>::seq(1, i-1).mulItems(h.subMatrix(1, i-1)) * u.subMatrix(1, i-1).reverse() ) ;
-	}	
+	   MatrixOneDim<Interval<T>> t = h; 
+	   for(int i=0; i < l.size(); i++)   	
+              h[i] = t.subMatrix(0, i) * l.subMatrix(0, i).reverse();
+	}
         return IntervalSeries<T>(h);
     }
 
@@ -224,8 +217,8 @@ namespace snowgoose {
     {
 	const MatrixOneDim<Interval<T2>>& l = x.m_coef;
 	MatrixOneDim<Interval<T2>>  h(l.size(), 0.0);
-
-        for(int i=0; i < l.size(); i++)
+	h[0] = sqr(l.item(0));
+        for(int i=1; i < l.size(); i++)
 	   h[i] = l.subMatrix(0, i) * l.subMatrix(0, i).reverse();
         return IntervalSeries<T2>(h);
     }
@@ -233,8 +226,8 @@ namespace snowgoose {
     template<class T2> IntervalSeries<T2> sqrt(const IntervalSeries<T2>& x)
     {
 	const MatrixOneDim<Interval<T2>>& u = x.m_coef;
-	if ((u.item(0) < 0.0) == IntervalBool::True)
-            throw std::invalid_argument("The function Series<T>::sqrt is not defined for negative numbers"); 
+        if(u.item(0).isPointIn(0.0) || (u.item(0) < 0.0) == IntervalBool::True)
+		throw std::invalid_argument("Invalid argument in IntervalSeries<T>::sqrt. There isn't derivation for interval that includes zero or negative numbers.");
         return x^0.5;
     }
 
@@ -505,7 +498,7 @@ namespace snowgoose {
         else if(condition==IntervalBool::False) 
             return y;
         else
-        throw std::invalid_argument("IntervalSeries::min operation is not defined.");
+            throw unite(x,y);
     }
     
     template<class T2> IntervalSeries<T2> max(const IntervalSeries<T2> &x, const IntervalSeries<T2> &y)
@@ -516,7 +509,7 @@ namespace snowgoose {
         else if(condition==IntervalBool::False) 
             return y;
         else
-        throw std::invalid_argument("IntervalSeries::max operation is not defined.");
+            throw unite(x,y);
     }
             
     template<class T2> IntervalSeries<T2> ifThen(IntervalBool condition, const IntervalSeries<T2> &x, const IntervalSeries<T2> &y)
@@ -526,7 +519,19 @@ namespace snowgoose {
         else if(condition==IntervalBool::False) 
             return y;
         else
-            throw std::invalid_argument("IntervalSeries::ifThen operation is not defined.");
+            return unite(x,y);
+    }
+
+    template<class T2> IntervalSeries<T2> unite(const IntervalSeries<T2> &x, const IntervalSeries<T2> &y)
+    {
+        const MatrixOneDim<Interval<T2>>& u = x.m_coef;
+        const MatrixOneDim<Interval<T2>>& v = y.m_coef;
+	MatrixOneDim<Interval<T2>>  h(u.size(), 0.0);
+
+	for(int i=0; i < u.size(); i++)
+	   h[i] =  unite(u.item(i), v.item(i));
+	
+        return IntervalSeries<T2>(h);
     }
     
     template<class T2> IntervalBool cond(Conditions condition, const IntervalSeries<T2> &x, const IntervalSeries<T2> &y)

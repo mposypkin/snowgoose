@@ -13,6 +13,7 @@
 #include <iostream>
 #include "expr.hpp"
 #include "algder.hpp"
+#include "algsymdif.hpp"
 #include "algderhighord.hpp"
 #include "interval/interval_air.hpp"
 #include <math.h>
@@ -227,6 +228,16 @@ Expr<T> Holder5()
 	return y;
 }
 
+template <class T>
+Expr<T> diff()
+{
+	Expr<T> x;
+	//Expr<T> y = sin(sqr(x[0]))*x[0];
+	//Expr<T> y = sin(sqr(x[0]));
+	Expr<T> y = (x[0]^6) - 15 * (x[0]^4) + 27 * sqr(x[0]) + 250;
+	return y;
+}
+
 
 void calcFunc(const std::string& name, Expr<double> expr, const std::vector<double>& vars)
 {
@@ -258,7 +269,23 @@ void calcDerHighOrder(const std::string& name, Expr<Series<double>> expr, double
 	std::cout << name << ": " << result << '\n';
 }
 
-int main(int argc, char** argv) {
+void calcDerIntervalHighOrder(const std::string& name, Expr<IntervalSeries<double>> expr, Interval<double> interval, int order)
+{
+	IntervalSeries<double> result = expr.calc(IntervalSeriesAlg<double>(interval, order));	
+	std::cout << name << ": " << result << '\n';
+}
+
+int main(int argc, char** argv) 
+{
+    auto expr = diff<Interval<double>>();
+    auto der = expr.calc(DiffIntervalAlg<double>({ -4.0, 4.0 }, 4));
+    std::cout << der << '\n';
+
+    auto expr2 = diff<IntervalSeries<double>>();
+    calcDerIntervalHighOrder("diff interval", expr2, { -4.0, 4.0 }, 10);
+}
+
+int main__(int argc, char** argv) {
    
     //function value
 	auto expr = Ball<double>();
@@ -296,13 +323,13 @@ int main(int argc, char** argv) {
 
 int main_(int argc, char** argv) {
 	
-	auto expr = Ackley1<double>(2);	
+	Expr<double> expr = Ackley1<double>(2.0);	
 	std::cout << "Ackley1: \n" << expr;
 	calcFunc("Ackley1", expr, { 0.0, 0.0});
 	calcFunc("Ackley1", expr, { 1.0, 1.0 });
 	calcFunc("Ackley1", expr, { 2.0, 2.0 });
 	
-	auto exprInterval = Ackley1<Interval<double>>(2);
+	auto exprInterval = Ackley1<Interval<double>>(2.0);
 	calcInterval("Ackley1 estimation", exprInterval, { { 0.5, 1.5 }, { -0.5, 0.5 } });
 	calcInterval("Ackley1 estimation", exprInterval, { { 0.9, 1.1 }, { -0.1, 0.1 } });
 

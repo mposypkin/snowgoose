@@ -119,24 +119,17 @@ namespace snowgoose {
         return Series(h);
     }
     
-    // h(x) = u(x)^r
-    // h'(x) u(x) = r u'(x) h(x)
-    // z(x) = h'(x) u(x) = r u'(x) h(x)
     template<class T> Series<T> Series<T>::operator^(int exp) const
     {
-        
-        const MatrixOneDim<T>& u = m_coef;
-	MatrixOneDim<T>  h(u.size(), 0.0);
-	MatrixOneDim<T>  z(u.size(), 0.0);
 
-        h[0] = std::pow(u.item(0), exp);
-	z[0] = exp * u.item(1) * h.item(0);
-
-	for(int i=1; i < u.size(); i++)
+	const MatrixOneDim<T>& l = m_coef;
+	MatrixOneDim<T>  h = l;
+	for(int j=1; j < exp; j++)	
 	{
-	   z[i] =  ((double)exp/i) * ( MatrixOneDim<T>::seq(1, i).mulItems(u.subMatrix(1, i)) * h.subMatrix(0, i-1).reverse() ) ;        
-	   h[i] =  i==1 ? z.item(i)/u.item(0) : z.item(i)/u.item(0) - 1.0/(i*u.item(0)) * ( MatrixOneDim<T>::seq(1, i-1).mulItems(h.subMatrix(1, i-1)) * u.subMatrix(1, i-1).reverse() ) ;
-	}	
+	   MatrixOneDim<T> t = h; 
+	   for(int i=0; i < l.size(); i++)   	
+              h[i] = t.subMatrix(0, i) * l.subMatrix(0, i).reverse();
+	}
         return Series<T>(h);
     }
 
@@ -148,6 +141,9 @@ namespace snowgoose {
         const MatrixOneDim<T>& u = m_coef;
 	MatrixOneDim<T>  h(u.size(), 0.0);
 	MatrixOneDim<T>  z(u.size(), 0.0);
+
+        if (u.item(0) == 0.0)
+            return Series<T>(h);
 
         h[0] = std::pow(u.item(0), exp);
 	z[0] = exp * u.item(1) * h.item(0);
@@ -185,6 +181,10 @@ namespace snowgoose {
     {
 	const MatrixOneDim<T2>& u = y.m_coef;
 	MatrixOneDim<T2>  h(u.size(), 0.0);
+
+        if (u.item(0) == 0.0)
+            throw std::invalid_argument("Invalid operation. Divide by 0.0.");
+
         h[0] = t/u.item(0);
 
         for(int i=1; i < u.size(); i++)
@@ -215,6 +215,8 @@ namespace snowgoose {
     
     template<class T2> Series<T2>operator/(const Series<T2>&y, T2 t)
     {
+        if (t == 0.0)
+            throw std::invalid_argument("Invalid operation. Divide by 0.0.");
         return Series<T2>((1.0/t) * y.m_coef);
     }
     
@@ -232,8 +234,8 @@ namespace snowgoose {
     { 
         const MatrixOneDim<T2>& u = x.m_coef;
 
-        if (u.item(0) < 0.0)
-            throw std::invalid_argument("The function Series<T>::sqrt is not defined for negative numbers");
+        if (u.item(0) <= 0.0)
+            throw std::invalid_argument("Invalid argument in Series<T>::sqrt. There isn't derivation for negative numbers and  zero.");
 	
         return x^0.5;
     }
@@ -333,6 +335,9 @@ namespace snowgoose {
 
         h[0] = std::asin(u.item(0));
 	v[0] = std::sqrt(1.0 - u.item(0)*u.item(0));
+        
+        if(v.item(0)==0.0)
+		throw std::invalid_argument("Invalid argument in Series::asin. Derivation does not exist.");
         h[1] = u.item(1)/v.item(0);
         v[1] = -h.item(1) * u.item(0);
 
@@ -357,6 +362,8 @@ namespace snowgoose {
 
         h[0] = std::acos(u.item(0));
 	v[0] = std::sqrt(1.0 - u.item(0)*u.item(0));
+        if(v.item(0)==0.0)
+		throw std::invalid_argument("Invalid argument in Series::acos. Derivation does not exist.");
         h[1] = -u.item(1)/v.item(0);
         v[1] = h.item(1)*u.item(0);
 

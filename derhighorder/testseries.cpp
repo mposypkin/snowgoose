@@ -426,8 +426,6 @@ void IntervalTest18()
     std::cout << "IntervalTest18: " <<  z;
 }
 
-
-
 int main(int argc, char** argv) {
 
     Test1(); 
@@ -469,6 +467,7 @@ int main(int argc, char** argv) {
     IntervalTest16();
     IntervalTest17();
     IntervalTest18();
+
 
     return 0;
 }

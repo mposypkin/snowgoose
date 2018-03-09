@@ -170,6 +170,12 @@ namespace snowgoose {
 			*/
 			IntervalBool operator != (T y) const;
 			/**
+			* Is a point included in the interval
+			* @param point
+			* @return true or false
+			*/
+                        bool isPointIn(T point) const { return point >= lb() && point <= rb(); }
+			/**
 			* Is left number less than right interval
 			* @param x is left number
 			* @param y is right number
@@ -337,6 +343,14 @@ namespace snowgoose {
 			* @return output stream
 			*/
 			template<class T2> friend std::ostream& operator<<(std::ostream & out, const Interval<T2> x);
+
+			/**
+			* Union of intervals
+			* @param x is left interval
+			* @param y is right interval
+			* @return union of intervals
+			*/
+			template<class T2> friend Interval<T2> unite(const Interval<T2> &x, const Interval<T2> &y);
 			/**
 			* Low bound
 			* @return low bound.
@@ -557,7 +571,7 @@ namespace snowgoose {
 			else if (ib == IntervalBool::False)
 				return y;
 			else
-				return Interval<T>(SGMIN(x.m_lb, y.m_lb), SGMAX(x.m_rb, y.m_rb));
+				return unite(x,y);
 		}
 		template<class T> std::ostream& operator<<(std::ostream & out, const Interval<T> x)
 		{
@@ -714,7 +728,11 @@ namespace snowgoose {
 				rb = SGMAX(t1, t2);
 			}
 			return Interval<T>(lb, rb);
-		}       
+		}
+		template<class T> Interval<T> unite(const Interval<T> &x, const Interval<T> &y)
+		{
+			return Interval<T>(SGMIN(x.m_lb, y.m_lb), SGMAX(x.m_rb, y.m_rb));
+		}    
     }
 }
 
