@@ -154,8 +154,8 @@ namespace snowgoose {
     
     template<class T2> ValDer<T2> sqrt(const ValDer<T2>&x)
     {
-        if(x.m_val < 0.0)
-            throw std::invalid_argument("The function ValDer<T>::sqrt is not defined for negative numbers");
+        if(x.m_val <= 0.0)
+            throw std::invalid_argument("The function ValDer<T>::sqrt is not defined for negative numbers and zero.");
         auto sq = std::sqrt(x.m_val);
         return ValDer<T2>(sq, x.m_der/(2.0 * sq));
     }

@@ -58,7 +58,7 @@ namespace expression {
 	* Algorithm to calculate value of a function
 	*/
 	template<class T=double>
-	class FuncAlg : public Algorithm<T>
+	class FuncAlg : public virtual Algorithm<T>
 	{
     private:
         std::vector<T> m_v;
@@ -158,7 +158,7 @@ namespace expression {
 	* Algorithm to calculate interval estimation of the function
 	*/
 	template<class T=double>
-	class InterEvalAlg : public Algorithm<Interval<T>>
+	class InterEvalAlg : public virtual Algorithm<Interval<T>>
 	{
     private:
         std::vector<Interval<T>> m_v;

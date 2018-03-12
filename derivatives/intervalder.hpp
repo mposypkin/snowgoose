@@ -73,7 +73,7 @@ namespace snowgoose {
             template<class T2> friend IntervalDer<T2> max(const IntervalDer<T2> &x, const IntervalDer<T2> &y);
             template<class T2> friend IntervalDer<T2> ifThen(IntervalBool condition, const IntervalDer<T2> &x, const IntervalDer<T2> &y);
             template<class T2> friend IntervalBool cond(Conditions condition, const IntervalDer<T2> &x, const IntervalDer<T2> &y);
-            
+            template<class T2> friend IntervalDer<T2> unite(const IntervalDer<T2> &x, const IntervalDer<T2> &y);
             template<class T2> friend std::ostream& operator<<(std::ostream & out, const IntervalDer<T2> &x);
             Interval<T>  value() const {return m_val;}
             Grad<Interval<T>> grad() const {return m_der;}
@@ -160,6 +160,8 @@ namespace snowgoose {
     
     template<class T2> IntervalDer<T2> sqrt(const IntervalDer<T2> &x)
     {
+        if(x.m_val.isPointIn(0.0) || (x.m_val < 0.0) == IntervalBool::True)
+		throw std::invalid_argument("Invalid argument in IntervalDer::sqrt. There isn't derivation for interval that includes zero or negative numbers.");
         auto sq = interval::sqrt(x.m_val);
         return IntervalDer<T2>(sq, x.m_der/(2.0 * sq));
     }
@@ -230,16 +232,16 @@ namespace snowgoose {
     
     template<class T2> IntervalDer<T2> abs(const IntervalDer<T2> &x)
     {
-        if(x.m_val==0.0)
-            throw std::invalid_argument("Invalid argument in IntervalDer::get_abs. There isn't derivation at zero.");
+        if(x.m_val.isPointIn(0.0))
+		throw std::invalid_argument("Invalid argument in IntervalDer::abs. There isn't derivation for interval that includes zero.");
         
         IntervalBool rez = x.m_val < 0.0;
         if(rez==IntervalBool::True)
             return IntervalDer<T2>(interval::abs(x.m_val), -1.0 * x.m_der);
         else if(rez==IntervalBool::False)
             return IntervalDer<T2>(interval::abs(x.m_val), x.m_der);
-        else //IntervalBool::Intermediate case
-            throw std::invalid_argument("Invalid argument in IntervalDer::get_abs. There isn't derivation at zero.");
+        else 
+            throw std::invalid_argument("Invalid argument in IntervalDer::abs");
     }
     
     template<class T2> IntervalDer<T2> min(const IntervalDer<T2> &x, const IntervalDer<T2> &y)
@@ -250,18 +252,18 @@ namespace snowgoose {
         else if(condition==IntervalBool::False) 
             return y;
         else
-        throw std::invalid_argument("IntervalDer::min operation is not defined.");
+            throw unite(x,y);
     }
     
     template<class T2> IntervalDer<T2> max(const IntervalDer<T2> &x, const IntervalDer<T2> &y)
-    {
+    {   
         auto condition = (x.m_val >= y.m_val);
         if(condition==IntervalBool::True) 
             return x;
         else if(condition==IntervalBool::False) 
             return y;
         else
-        throw std::invalid_argument("IntervalDer::max operation is not defined.");
+            throw unite(x,y);
     }
     
     template<class T2> IntervalDer<T2> ifThen(IntervalBool condition, const IntervalDer<T2> &x, const IntervalDer<T2> &y)
@@ -271,7 +273,7 @@ namespace snowgoose {
         else if(condition==IntervalBool::False) 
             return y;
         else
-            throw std::invalid_argument("IntervalDer::ifThen operation is not defined.");
+            throw unite(x,y);
     }
     
     template<class T2> IntervalBool cond(Conditions condition, const IntervalDer<T2> &x, const IntervalDer<T2> &y)
@@ -295,6 +297,14 @@ namespace snowgoose {
                 break;
         }
         throw std::invalid_argument("Invalid condition in IntervalValDer::Condition.");
+    }
+
+    template<class T2> IntervalDer<T2> unite(const IntervalDer<T2> &x, const IntervalDer<T2> &y)
+    {
+	std::vector<Interval<T2>> vec;
+        for(int i=0; i< x.m_der.size(); i++)
+	   vec.push_back(unite(x.m_der[i], y.m_der[i]));
+	return IntervalDer<T2>(unite(x.m_val, y.m_val), vec);
     }
     
     template<class T2> std::ostream& operator<<(std::ostream & out, const IntervalDer<T2> &x)

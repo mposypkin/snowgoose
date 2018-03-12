@@ -9,6 +9,7 @@
 #include "algorithm.hpp"
 #include "algder.hpp"
 #include "algderhighord.hpp"
+#include "algsymdif.hpp"
 #include "derivatives/valder.hpp"
 #include "derivatives/intervalder.hpp"
 #include "derivatives/valder.hpp"
@@ -270,7 +271,12 @@ namespace expression {
 		* @return expression
 		*/
 		Expr<T> operator<=(const Expr<T>& value);
-
+		/**
+		* Is left expression equal value
+		* @param value is right value
+		* @return true or false
+		*/
+		bool operator==(double value) const;
 		/**
 		* Index operator for vector variables
 		* @param i is integer index
@@ -316,6 +322,12 @@ namespace expression {
 		* @return real number or interval
 		*/
 		T calc(const Algorithm<T> & alg) const;
+                /**
+		* calculates expression for symbol differentiation (for one dimension function only)
+                * @param alg is algorithm. It allows to calculate a derivative in a point or an interval
+                */
+                T calc(const DiffAlg<T> & alg) const;
+
 		/**
 		* Output the expression
 		* @param out is output stream
@@ -323,9 +335,19 @@ namespace expression {
 		* @return output stream
 		*/
 		template <class T2> friend std::ostream& operator<<(std::ostream & out, const Expr<T2>& v);
+                /**
+		* copy expression
+		* @return expression
+		*/
+                Expr<T> copy() const { return Expr<T>(node->copy()); }
 		friend class Iterator;
 		template <class T3> friend class ExprIndex;
+                template <class T3> friend class SymDifAlg;
+                template <class T3> friend class Node;
+		template <class T3> friend class IfTrue;
+                
 	private:
+                Expr<T> handle(const HandleNodeAlg<T> &alg) const { return node->handle(alg); }
 		/**
 		* It is root of tree of the expression
 		*/
@@ -524,6 +546,16 @@ namespace expression {
 		return Expr<T>(ptrNode<T>(new ConditionNode<T>(Conditions::LessEqual, node, value.node)));
 	}
 
+	template <class T> bool Expr<T>::operator==(double value) const
+	{
+		if(node->IsConst())
+                {
+			auto cnode = std::dynamic_pointer_cast<Const<T>>(node);
+			return cnode->Value() == value;
+                }
+		return false;
+	}
+
 	template <class T> Expr<T> Expr<T>::operator[](int i)
 	{
 		return Expr<T>(ptrNode<T>(new Var<T>(i)));
@@ -557,6 +589,16 @@ namespace expression {
 		return node->calc(alg, map_iterator);
 	}
 
+        template <class T> T Expr<T>::calc(const DiffAlg<T> & alg) const
+	{
+                SymDifAlg<T> sda;
+		Expr<T> expr = *this;
+		for(int i = 0; i < alg.order(); i++)
+        		expr = expr.handle(sda);
+		MapIterator map_iterator;
+                return expr.node->calc(alg, map_iterator);
+	}
+
 	template <class T> T calcFunc(const Expr<T>& exp, const std::vector<T>& point)
 	{
 		return exp.calc(FuncAlg<T>(point));
@@ -585,6 +627,16 @@ namespace expression {
 	template <class T> IntervalSeries<T> calcIntervalDerHighOrder(const Expr<IntervalSeries<T>>& exp, const Interval<T>& interval, int order)
 	{
 		return exp.calc(IntervalSeriesAlg<T>(interval, order));
+	}
+
+	template <class T> T calcSymDiff(const Expr<T>& exp, T point, int order)
+	{
+		return exp.calc(DiffPointAlg<T>(point, order));
+	}
+
+	template <class T> Interval<T> calcIntervalSymDiff(const Expr<Interval<T>>& exp, const Interval<T>& interval, int order)
+	{
+		return exp.calc(DiffIntervalAlg<T>(interval, order));
 	}
 
 	template <class T> std::ostream& operator<<(std::ostream & out, const Expr<T>& v)
