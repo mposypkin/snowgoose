@@ -411,7 +411,8 @@ namespace expression {
 				return alg.IfTrue(condition, this->m_childs[0]->calc(alg, map_iterator), this->m_childs[1]->calc(alg, map_iterator));
 			
 		}
-		std::ostream& prn(std::ostream & out) const { return out << "ifThen(" << *conditionNode << " , " << *this->m_childs[0] << " , " << *this->m_childs[1] << ")"; }
+		//std::ostream& prn(std::ostream & out) const { return out << "ifThen(" << *conditionNode << " , " << *this->m_childs[0] << " , " << *this->m_childs[1] << ")"; }
+                std::ostream& prn(std::ostream & out) const { return out << "(" << *this->m_childs[0] << " if " << *conditionNode << " else "  << *this->m_childs[1] << ")"; }
                 ptrNode<T> copy() const { 
                         ptrCNode<T> cond = std::dynamic_pointer_cast<ConditionNode<T>>(conditionNode->copy());
                 	return ptrNode<T>(new IfTrue(cond, this->m_childs[0]->copy(), this->m_childs[1]->copy())); 
