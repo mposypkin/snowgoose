@@ -68,6 +68,7 @@ namespace expression {
 		{ 
 			return Series<T>(cnst, 0.0, m_order); 
 		}
+		Series<T> UnaryMinus(const Series<T>& t) const { return -1.0 * t; }
 	};
 
 template<class T>
@@ -148,6 +149,7 @@ template<class T>
 			}
 			return vPtrAlg<IntervalSeries<T>>({ ptrAlg<IntervalSeries<T>>(new IntervalSeriesAlg<T>(leftInterval, m_order)), ptrAlg<IntervalSeries<T>>(new IntervalSeriesAlg<T>(rightInterval, m_order))});
 		}
+		IntervalSeries<T> UnaryMinus(const IntervalSeries<T>& t) const { return -1.0*t; }
 	};
   
 }
