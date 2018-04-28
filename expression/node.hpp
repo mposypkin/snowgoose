@@ -114,6 +114,17 @@ namespace expression {
 	};
 
 	template <class T>
+	class UnaryMinus : public Node<T>
+	{
+	public:
+		UnaryMinus(const ptrNode<T> &node) : Node<T>({node}) {}
+		T calc(const Algorithm<T> & alg, MapIterator &map_iterator) const { return alg.UnaryMinus(this->m_childs[0]->calc(alg, map_iterator)); };
+		std::ostream& prn(std::ostream & out) const { return out << "-(" << *this->m_childs[0] << ")"; }
+		ptrNode<T> copy() const { return ptrNode<T>(new UnaryMinus(this->m_childs[0]->copy())); }
+		Expr<T> handle(const HandleNodeAlg<T> &alg) const { return alg.unaryMinusNode(this->expr(0)); }
+	};
+
+	template <class T>
 	class Mul : public Node<T>
 	{
 	public:
@@ -584,21 +595,21 @@ namespace expression {
 	class HandleNodeAlg
 	{    
 	public:
-        	HandleNodeAlg(){}
+     	HandleNodeAlg(){}
 		virtual Expr<T> varNode(int index) const = 0;
-                virtual Expr<T> constNode(double val) const = 0;
-                virtual Expr<T> plusNode(const Expr<T> &l, const Expr<T> &r) const = 0;
-                virtual Expr<T> minusNode(const Expr<T> &l, const Expr<T> &r) const = 0;
-                virtual Expr<T> mulNode(const Expr<T> &l, const Expr<T> &r) const = 0;
-                virtual Expr<T> divNode(const Expr<T> &l, const Expr<T> &r) const = 0;
-                virtual Expr<T> sinNode(const Expr<T> &expr) const = 0;
-                virtual Expr<T> cosNode(const Expr<T> &expr) const = 0;
-                virtual Expr<T> tgNode(const Expr<T> &expr) const = 0;
-                virtual Expr<T> ctgNode(const Expr<T> &expr) const = 0;
-                virtual Expr<T> asinNode(const Expr<T> &expr) const = 0;
-                virtual Expr<T> acosNode(const Expr<T> &expr) const = 0;
-                virtual Expr<T> atgNode(const Expr<T> &expr) const = 0;
-                virtual Expr<T> actgNode(const Expr<T> &expr) const = 0;              
+		virtual Expr<T> constNode(double val) const = 0;
+		virtual Expr<T> plusNode(const Expr<T> &l, const Expr<T> &r) const = 0;
+		virtual Expr<T> minusNode(const Expr<T> &l, const Expr<T> &r) const = 0;
+		virtual Expr<T> mulNode(const Expr<T> &l, const Expr<T> &r) const = 0;
+		virtual Expr<T> divNode(const Expr<T> &l, const Expr<T> &r) const = 0;
+		virtual Expr<T> sinNode(const Expr<T> &expr) const = 0;
+		virtual Expr<T> cosNode(const Expr<T> &expr) const = 0;
+		virtual Expr<T> tgNode(const Expr<T> &expr) const = 0;
+		virtual Expr<T> ctgNode(const Expr<T> &expr) const = 0;
+		virtual Expr<T> asinNode(const Expr<T> &expr) const = 0;
+		virtual Expr<T> acosNode(const Expr<T> &expr) const = 0;
+		virtual Expr<T> atgNode(const Expr<T> &expr) const = 0;
+		virtual Expr<T> actgNode(const Expr<T> &expr) const = 0;              
 		virtual Expr<T> expNode(const Expr<T> &expr) const = 0;
 		virtual Expr<T> sqrtNode(const Expr<T> &expr) const = 0;
 		virtual Expr<T> sqrNode(const Expr<T> &expr) const = 0;
@@ -615,6 +626,7 @@ namespace expression {
 		virtual Expr<T> indexNode() const = 0;
 		virtual Expr<T> calcIndexNode() const = 0;
 		virtual Expr<T> exprIndexNode() const = 0;
+		virtual Expr<T> unaryMinusNode(const Expr<T> &expr) const = 0;
 	};
 
 }}

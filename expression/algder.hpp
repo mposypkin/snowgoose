@@ -67,6 +67,8 @@ namespace expression {
 		    return ValDer<T>(m_v[index], Grad<T>(grad));
 		}      
 		ValDer<T> CreateConst(double cnst) const { return ValDer<T>(cnst, Grad<T>(m_v.size(), 0.0)); }
+		ValDer<T> UnaryMinus(const ValDer<T>& t) const { return -1.0 * t; }
+
 	};
 
 	template<class T>
@@ -149,6 +151,7 @@ namespace expression {
 			}
 			return vPtrAlg<IntervalDer<T>>({ ptrAlg<IntervalDer<T>>(new IntervalDerAlg<T>(leftVec)), ptrAlg<IntervalDer<T>>(new IntervalDerAlg<T>(rightVec))});
 		}
+		IntervalDer<T> UnaryMinus(const IntervalDer<T>& t) const { return -1.0 * t; }
 	};    
 }
 }

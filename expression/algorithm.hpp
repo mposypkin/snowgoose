@@ -42,7 +42,7 @@ namespace expression {
 		virtual T Sqr(const T& t) const = 0;
 		virtual T Pow(const T& base, int exp) const = 0;
 		virtual T Pow(const T& base, bool isBaseVar, const T& exp, bool isExpVar) const = 0;
-        	virtual T PowDouble(const T& base, double exp) const = 0;
+     	virtual T PowDouble(const T& base, double exp) const = 0;
 		virtual T Abs(const T& t) const = 0;		
 		virtual T Ln(const T& t) const = 0;
 		virtual T Log(const T& t, double base) const = 0;
@@ -53,6 +53,8 @@ namespace expression {
 		virtual T CreateVar(int index) const = 0;
 		virtual T CreateConst(double cnst) const = 0;
 		virtual vPtrAlg<T> GetNewAlgorithm(Conditions condition, int index, double cnst) const { return vPtrAlg<T>(); }//empty vector
+		virtual T UnaryMinus(const T& t) const = 0;
+					
 	};
 	/**
 	* Algorithm to calculate value of a function
@@ -151,6 +153,7 @@ namespace expression {
 		}
 		T CreateVar(int index) const { return m_v[index]; }      
 		T CreateConst(double cnst) const { return cnst; };
+		T UnaryMinus(const T& t) const { return -t; };
 	};
 
 
@@ -223,6 +226,7 @@ namespace expression {
 			}
 			return vPtrAlg<Interval<T>>({ ptrAlg<Interval<T>>(new InterEvalAlg<T>(leftVec)), ptrAlg<Interval<T>>(new InterEvalAlg<T>(rightVec))});
 		}
+		Interval<T> UnaryMinus(const Interval<T>& t) const { return -1.0 * t; };
             
 	};
 }

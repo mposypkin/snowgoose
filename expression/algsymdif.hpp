@@ -188,6 +188,11 @@ template<class T>
 				return dexpr * abs(expr.copy())/expr.copy();
 		}
 
+		Expr<T> unaryMinusNode(const Expr<T> &expr) const
+		{
+			return -expr.handle(*this);
+		}
+
 		Expr<T> lnNode(const Expr<T> &expr) const
 		{
 			return expr.handle(*this)/expr.copy();

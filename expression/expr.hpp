@@ -391,7 +391,7 @@ namespace expression {
 	}
 	template <class T> Expr<T> Expr<T>::operator-()
 	{
-		return -1*(*this);
+		return Expr<T>(ptrNode<T>(new UnaryMinus<T>(node)));
 	}
 	template <class T> Expr<T> Expr<T>::operator*(const Expr<T>& value)
 	{
