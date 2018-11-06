@@ -10,13 +10,16 @@
 #include "algder.hpp"
 #include "algderhighord.hpp"
 #include "algsymdif.hpp"
+#include "algpwl.hpp"
 #include "derivatives/valder.hpp"
 #include "derivatives/intervalder.hpp"
 #include "derivatives/valder.hpp"
 #include "derhighorder/series.hpp"
+#include "pwl/pwlbound.hpp"
 
 using namespace snowgoose::derivative;
 using namespace snowgoose::derhighorder;
+using namespace snowgoose::pwl;
 
 namespace snowgoose {
 namespace expression {
@@ -638,6 +641,11 @@ namespace expression {
 	{
 		return exp.calc(DiffIntervalAlg<T>(interval, order));
 	}
+
+	template <class T> PwlBound<T> calcPwlBound(const Expr<PwlBound<T>>& exp, T a, T b, int steps){
+		return exp.calc(PwlBoundAlg<T>(a,b,steps));
+	}
+
 
 	template <class T> std::ostream& operator<<(std::ostream & out, const Expr<T>& v)
 	{

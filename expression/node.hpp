@@ -39,21 +39,21 @@ namespace expression {
 		virtual T calc(const Algorithm<T> &, MapIterator &) const = 0;
 		friend std::ostream& operator<<(std::ostream & out, const Node<T>& v) { return v.prn(out);}
 		virtual std::ostream& prn(std::ostream & out) const = 0;
-        	virtual bool IsVar() const {return false;}
-                virtual bool IsConst() const {return false;}
-                virtual ptrNode<T> copy() const = 0;
-                virtual Expr<T> handle(const HandleNodeAlg<T> &alg) const = 0;
-                Expr<T> expr(int index) const { return Expr<T>(m_childs[index]); }
-        bool IsVarInTree() const
-        {
-            if(IsVar()) 
-                return true;
-            else
-                for(auto &node : m_childs)
-                    if(node->IsVarInTree())
-                        return true;
-            return false;
-        }
+		virtual bool IsVar() const {return false;}
+		virtual bool IsConst() const {return false;}
+		virtual ptrNode<T> copy() const = 0;
+		virtual Expr<T> handle(const HandleNodeAlg<T> &alg) const = 0;
+		Expr<T> expr(int index) const { return Expr<T>(m_childs[index]); }
+		bool IsVarInTree() const
+		{
+			if(IsVar()) 
+				 return true;
+			else
+				 for(auto &node : m_childs)
+				     if(node->IsVarInTree())
+				         return true;
+			return false;
+		}
 	protected:
 		vPtrNode<T> m_childs;
 	};
@@ -85,10 +85,10 @@ namespace expression {
 		T calc(const Algorithm<T> &alg, MapIterator &map_iterator) const { return alg.CreateConst(m_const); }
 		std::ostream& prn(std::ostream & out) const { return out << m_const; }
 		double getConst() { return m_const; }
-                ptrNode<T> copy() const { return ptrNode<T>(new Const(m_const)); }
-                Expr<T> handle(const HandleNodeAlg<T> &alg) const { return alg.constNode(m_const); }
-                bool IsConst() const { return true;}
-                double Value() const { return m_const; }
+		ptrNode<T> copy() const { return ptrNode<T>(new Const(m_const)); }
+		Expr<T> handle(const HandleNodeAlg<T> &alg) const { return alg.constNode(m_const); }
+		bool IsConst() const { return true;}
+		double Value() const { return m_const; }
 	};
 
 	template <class T>
@@ -415,9 +415,9 @@ namespace expression {
 				return alg.IfTrue(condition, this->m_childs[0]->calc(*vPtrAlg[0], map_iterator), this->m_childs[1]->calc(*vPtrAlg[1], map_iterator));
 			}
 			else if (condition == IntervalBool::True)
-				return alg.IfTrue(condition, this->m_childs[0]->calc(alg, map_iterator), T());
+				return this->m_childs[0]->calc(alg, map_iterator);
 			else if (condition == IntervalBool::False)
-				return alg.IfTrue(condition, T(), this->m_childs[1]->calc(alg, map_iterator));
+				return this->m_childs[1]->calc(alg, map_iterator);
 			else
 				return alg.IfTrue(condition, this->m_childs[0]->calc(alg, map_iterator), this->m_childs[1]->calc(alg, map_iterator));
 			

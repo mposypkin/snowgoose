@@ -15,11 +15,14 @@
 #include "algder.hpp"
 #include "algsymdif.hpp"
 #include "algderhighord.hpp"
+#include "algpwl.hpp"
 #include "interval/interval_air.hpp"
+#include "pwl/pwlbound.hpp"
 #include <math.h>
 
 using namespace snowgoose::expression;
 using namespace snowgoose::interval;
+using namespace snowgoose::pwl;
 
 template <class T>
 Expr<T> Ackley1(int N)
@@ -275,6 +278,12 @@ void calcDerIntervalHighOrder(const std::string& name, Expr<IntervalSeries<doubl
 	std::cout << name << ": " << result << '\n';
 }
 
+void calcPwlBound(const std::string& name, Expr<PwlBound<double>> expr, double a, double b, int steps)
+{
+	PwlBound<double> result = expr.calc(PwlBoundAlg<double>(a, b, steps));	
+	std::cout << name << ": " << result << '\n';
+}
+
 int main(int argc, char** argv) 
 {
     auto expr = diff<Interval<double>>();
@@ -283,6 +292,15 @@ int main(int argc, char** argv)
 
     auto expr2 = diff<IntervalSeries<double>>();
     calcDerIntervalHighOrder("diff interval", expr2, { -4.0, 4.0 }, 10);
+
+	auto expr3 = diff<PwlBound<double>>();
+	calcPwlBound("Pwl diff bounds", expr3, -4.0, 4.0, 8);
+
+	auto expr4 = Holder3<PwlBound<double>>();
+	calcPwlBound("Pwl holder bounds", expr4, 0.0, 6.0, 3);
+
+	auto expr5 = diff<Interval<double>>();
+	calcInterval("interval diff bounds", expr5, {{-4.0, 4.0}});
 }
 
 int main__(int argc, char** argv) {
