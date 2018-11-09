@@ -12,6 +12,7 @@
 
 void test_pwlbounds();
 
+
 namespace snowgoose {
 	namespace pwl {
 
@@ -65,31 +66,31 @@ namespace snowgoose {
 			* @param y is a right member
 			* @return IntervalBool
 			*/
-			IntervalBool operator < (const PwlBound &y) const { this->m_upper < y.m_lower; }
+			IntervalBool operator < (const PwlBound &y) const { return this->m_upper < y.m_lower; }
 			/**
 			* Is a left upper bound less or equal than a right lower one
 			* @param y is a right member
 			* @return IntervalBool
 			*/
-			IntervalBool operator <= (const PwlBound &y) const { this->m_upper <= y.m_lower; }
+			IntervalBool operator <= (const PwlBound &y) const { return this->m_upper <= y.m_lower; }
 			/**
 			* Is a left lower bound more than a right upper one
 			* @param y is a right member
 			* @return IntervalBool
 			*/
-			IntervalBool operator > (const PwlBound &y) const { this->m_lower > y.m_upper; }
+			IntervalBool operator > (const PwlBound &y) const { return this->m_lower > y.m_upper; }
 			/**
 			* Is a left lower bound more or equal than a right upper one
 			* @param y is a right member
 			* @return IntervalBool
 			*/
-			IntervalBool operator >= (const PwlBound &y) const { this->m_lower >= y.m_upper;  }
+			IntervalBool operator >= (const PwlBound &y) const { return this->m_lower >= y.m_upper;  }
 			/**
 			* Is a left bound equals to a right one (lower and upper respectively)
 			* @param y is right number
 			* @return true or false
 			*/
-			bool operator == (const PwlBound &y) const { this->m_lower == y.m_lower && this->m_upper == y.m_upper; }
+			bool operator == (const PwlBound &y) const { return this->m_lower == y.m_lower && this->m_upper == y.m_upper; }
 			/**
 			* Returns a lower pwl bound
 			* @return an ordered by x array of points
@@ -244,10 +245,13 @@ namespace snowgoose {
 			*/
 			template<class T2> friend std::ostream& operator<<(std::ostream & out, const PwlBound<T2> x);
 			friend void ::test_pwlbounds();
-			template<class T2> friend class PwlBoundAlg;
-		private:
+
+			template<class> friend class PwlBoundAlg;
+
+
 			PwlBound(const PwlFunc<T>& lower, const PwlFunc<T>& upper, int steps = 5) : m_lower(lower), m_upper(upper), m_steps(steps) {
 			}
+		private:
 			PwlBound get_pwl_bound(T a, T b) const;
 			PwlFunc<T> get_pwl(const std::vector <Parabola<T>>& bounds, T len_step, bool is_lower = true) const;
 			PwlFunc<T> get_pwl(const std::vector <FracLinFunc<T>>& bounds, T len_step, bool is_lower = true) const;
