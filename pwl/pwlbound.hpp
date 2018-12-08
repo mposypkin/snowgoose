@@ -16,6 +16,8 @@ void test_pwlbounds();
 namespace snowgoose {
 	namespace pwl {
 
+		template<class T> class PwlInterval;
+
 		template<class T> class PwlBound
 		{
 		public:
@@ -112,6 +114,16 @@ namespace snowgoose {
 			*/
 			T get_max() const { return m_upper.get_max(); }
 			/**
+			* Returns a min point for a lower pwl bound
+			* @return a min point
+			*/
+			Point<T> get_min_point() const { return m_lower.get_min_point(); }
+			/**
+			* Returns a max point for an upper pwl bound
+			* @return a max point
+			*/
+			Point<T> get_max_point() const { return m_upper.get_max_point(); }
+			/**
 			* Returns left bound of x
 			* @return value
 			*/
@@ -121,6 +133,16 @@ namespace snowgoose {
 			* @return value
 			*/
 			T get_b() const { return m_lower.get_b(); }
+			/**
+			* Returns lower pwl bound
+			* @return PwlFunc<T>
+			*/
+			PwlFunc<T> get_lower() const { return m_lower; } 
+			/**
+			* Returns upper pwl bound
+			* @return PwlFunc<T>
+			*/
+			PwlFunc<T> get_upper() const { return m_upper; }
 
 			template<class T2> friend PwlBound<T2> operator*(T2 x, const PwlBound<T2>& y);
 			template<class T2> friend PwlBound<T2> operator*(const PwlBound<T2>& x, T2 y) { return y*x; }
@@ -247,12 +269,21 @@ namespace snowgoose {
 			friend void ::test_pwlbounds();
 
 			template<class> friend class PwlBoundAlg;
+			template<class T2> friend class PwlInterval;
 
-
+			/**
+			* Cuts bounds for interval from a to b
+			* @param a is a left bound of x
+			* @param b is a right bound of x
+			* @return a pwl bound
+			*/
+			PwlBound get_pwl_bound(T a, T b) const;
 			PwlBound(const PwlFunc<T>& lower, const PwlFunc<T>& upper, int steps = 5) : m_lower(lower), m_upper(upper), m_steps(steps) {
 			}
+			template<class T2> friend PwlInterval<T2> get_PwlInterval(const PwlBound<T2>& bound, const Interval<T2>& interval);
+
 		private:
-			PwlBound get_pwl_bound(T a, T b) const;
+
 			PwlFunc<T> get_pwl(const std::vector <Parabola<T>>& bounds, T len_step, bool is_lower = true) const;
 			PwlFunc<T> get_pwl(const std::vector <FracLinFunc<T>>& bounds, T len_step, bool is_lower = true) const;
 			PwlFunc<T> get_pwl(const Parabola<T>& bound, T len_step, bool is_lower = true) const;
@@ -1271,8 +1302,7 @@ namespace snowgoose {
 			cos_convex(c, d, len_step, u, l);
 		}
 
-		template<class T2> void cos_build_bound(T2 c, T2 d, T2 len_step, bool is_increase, PwlFunc<T2>& l, PwlFunc<T2>& u) {
-			T2 t = static_cast<int>(floor(c / M_PI)) * M_PI + M_PI_2;
+		template<class T2> void cos_build_bound(T2 c, T2 d, T2 t, T2 len_step, bool is_increase, PwlFunc<T2>& l, PwlFunc<T2>& u) {
 			if (ls(c, t) && mo(d,t)) {
 				if (is_increase) {
 					cos_convex(c, t, len_step, l, u);
@@ -1312,12 +1342,13 @@ namespace snowgoose {
 			T2 len_step = (d - c) / bound.m_steps;
 	
 			if (end - start < 2) { 
+				T2 t = start * M_PI + M_PI_2;
 				if (start % 2 == 0) {//decresing	
-					cos_build_bound(c, d, len_step, false, l, u);
+					cos_build_bound(c, d, t, len_step, false, l, u);
 					return PwlBound<T2>(l(bound.m_upper), u(bound.m_lower), bound.m_steps);
 				}
 				else {//increasing
-					cos_build_bound(c, d, len_step, true, l, u);
+					cos_build_bound(c, d, t, len_step, true, l, u);
 					return PwlBound<T2>(l(bound.m_lower), u(bound.m_upper), bound.m_steps);
 				}
 			}
@@ -1329,7 +1360,8 @@ namespace snowgoose {
 					T2 b = i==last ? d : (i + 1)*M_PI;
 					bool inc = i % 2 == 0 ? false : true;
 					y_seg.insert({ a, b, inc });
-					cos_build_bound(a, b, len_step, inc, l, u);
+					T2 t = i * M_PI + M_PI_2;
+					cos_build_bound(a, b, t, len_step, inc, l, u);
 				}
 				PwlBound<T2> out_bound(l, u, bound.m_steps);
 				return bound.get_copmosition(out_bound, y_seg);

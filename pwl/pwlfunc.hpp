@@ -55,9 +55,11 @@ namespace snowgoose {
 			T get_y(T x) const;
 			/*returns min of pwl function*/
 			T get_min() const;
+			Point<T> get_min_point() const;
 			/*returns max of pwl function*/
 			T get_max() const;
-			std::vector<Point<T>> Points() { return std::vector<Point<T>>(m_points.begin(), m_points.end()); }
+			Point<T> get_max_point() const;
+			std::vector<Point<T>> Points() const { return std::vector<Point<T>>(m_points.begin(), m_points.end()); }
 			PwlFunc<T> get_pwl_func(T a, T b) const;
 			template<class T2> friend std::ostream& operator<<(std::ostream & out, const PwlFunc<T2> x);
 			template<class T2> friend class PwlBound;
@@ -274,6 +276,14 @@ namespace snowgoose {
 			return (*std::max_element(m_points.begin(), m_points.end(), [](const Point<T>& p1, const Point<T>& p2) { return ls(p1.y, p2.y); })).y;
 		}
 
+		template<class T> Point<T> PwlFunc<T>::get_min_point() const {
+			return (*std::min_element(m_points.begin(), m_points.end(), [](const Point<T>& p1, const Point<T>& p2) { return ls(p1.y, p2.y); }));
+		}
+
+		template<class T> Point<T> PwlFunc<T>::get_max_point() const {
+			return (*std::max_element(m_points.begin(), m_points.end(), [](const Point<T>& p1, const Point<T>& p2) { return ls(p1.y, p2.y); }));
+		}
+
 		template<class T2> PwlFunc<T2> operator*(T2 x, const PwlFunc<T2>& f) {
 			std::set<Point<T2>> points;
 			for_each(f.m_points.begin(), f.m_points.end(), [&points, x](const Point<T2>& point) { points.insert({ point.x, point.y * x }); });
@@ -348,11 +358,13 @@ namespace snowgoose {
 				rezult.insert({ next->x , max_last.second.get_y(next->x) });
 
 				Point<T2> most_left = *next;
-				while (max_curr.first != max_last.first) {
+				T2 curr_y = max_curr.second.get_y(next->x);
+				T2 last_y = max_last.second.get_y(next->x);
+				while (!eq(curr_y, last_y)) {
 					auto max_next = max_curr;
 					for (auto &item : temp) {
 						Point<T2> p;
-						if (get_intersect(it->x, max_curr.second.get_y(it->x), next->x, max_curr.second.get_y(next->x), item.second.get_y(it->x), item.second.get_y(next->x), p)) {
+						if (get_intersect(it->x, max_curr.second.get_y(it->x), next->x, curr_y, item.second.get_y(it->x), item.second.get_y(next->x), p)) {
 							if (ls(p.x, most_left.x)) {
 								max_next = item;
 								most_left = p;
@@ -362,6 +374,7 @@ namespace snowgoose {
 					rezult.insert(most_left);
 					temp.erase(max_next.first);
 					max_curr = max_next;
+					curr_y = max_curr.second.get_y(next->x);
 					most_left = *next;
 				}
 			}
@@ -391,11 +404,13 @@ namespace snowgoose {
 				temp.erase(min_curr.first);
 
 				Point<T2> most_left = *next;
-				while (min_curr.first != min_last.first) {
+				T2 curr_y = min_curr.second.get_y(next->x);
+				T2 last_y = min_last.second.get_y(next->x);
+				while (!eq(curr_y, last_y)) {
 					auto min_next = min_curr;
 					for (auto & item : temp) {
 						Point<T2> p;
-						if (get_intersect(it->x, min_curr.second.get_y(it->x), next->x, min_curr.second.get_y(next->x), item.second.get_y(it->x), item.second.get_y(next->x), p)) {
+						if (get_intersect(it->x, min_curr.second.get_y(it->x), next->x, curr_y, item.second.get_y(it->x), item.second.get_y(next->x), p)) {
 							if (ls(p.x, most_left.x)) {
 								min_next = item;
 								most_left = p;
@@ -405,6 +420,7 @@ namespace snowgoose {
 					rezult.insert(most_left);
 					temp.erase(min_next.first);
 					min_curr = min_next;
+					curr_y = min_curr.second.get_y(next->x);
 					most_left = *next;
 				}
 			}
